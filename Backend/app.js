@@ -5,8 +5,8 @@ const app = express();
 app.use(compression());
 
 //Routers
-const apiRouter = require('./routes/user.route');
-app.use('/api/user', apiRouter);
+const router = require('./routes');
+app.use('/api', router);
 app.get('/api', (req, res) => {
   res.send('Call /api for api call');
 });
