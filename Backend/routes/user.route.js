@@ -2,13 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 //Import Controlers
-const authController = require('../controllers/auth.controller')
-
-
-
-router.post('/login', authController.postLogin);
-
-router.post('/signup', (req, res) => {});
 
 router.delete('/logout', (req, res) => {});
 

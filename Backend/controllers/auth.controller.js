@@ -1,14 +1,30 @@
-const User = require('../model/Users');
-
-exports.postLogin = (req, res)=>{
-    const user = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password
+const db = require('../configs/database');
+const bcrypt = require('bcrypt');
+const validator = require('validator');
+exports.postSignUp = async (req, res) => {
+  const { username, email, password, confirmPassword } = req.body;
+  if (!username || !email || !password || !confirmPassword)
+    return res.status(400).json({ message: 'Please input all fields.' });
+  if (!validator.isEmail(email))
+    return res.status(400).json({ message: 'Not a valid email.' });
+  if (password !== confirmPassword)
+    return res.status(400).json({ message: 'Password do not match.' });
+  const hashedPassword = await bcrypt.hash(password, 12);
+  db.getDb()
+    .db()
+    .collection('users')
+    .insertOne({
+      username,
+      email,
+      password: hashedPassword,
     })
-    try{
-        const savedUser = user.save();
-    }catch(err){
-        res.status(400).send(err);
-    }
-}
+    .then((_) =>
+      res.status(201).json({ message: 'Create account successfully' })
+    )
+    .catch((err) =>
+      res.status(400).json({
+        message: 'Cannot create account',
+        duplicate: err.keyValue,
+      })
+    );
+};
