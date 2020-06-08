@@ -254,6 +254,9 @@ export default () => (
                 left='-180px'
                 zIndex={1}
                 scale={0.6}
+                backgroundImage={
+                  'linear-gradient(to right bottom, #0ddc99, #00dbb9, #00d9d4, #00d4e7, #20cff2)'
+                }
               />
             </div>
             <div
@@ -265,13 +268,24 @@ export default () => (
                 left='-100px'
                 zIndex={2}
                 scale={0.8}
+                backgroundImage={
+                  'linear-gradient(to right bottom, #dc0db8, #e500a8, #ec0198, #f0108a, #f2207c)'
+                }
               />
             </div>
             <div
               className='absolute h-full w-full'
               style={{ transformOrigin: '0 50%' }}
             >
-              <Card className='card-floating-0' left='0' zIndex={3} scale={1} />
+              <Card
+                className='card-floating-0'
+                left='0'
+                zIndex={3}
+                scale={1}
+                backgroundImage={
+                  'linear-gradient(to right top, #7700c0, #7302ca, #6e06d5, #660ce0, #5c12eb)'
+                }
+              />
             </div>
           </div>
         </div>
