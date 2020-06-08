@@ -10,6 +10,7 @@ import {
   FaTrophy,
   FaUsers,
   FaCode,
+  FaHeart,
 } from 'react-icons/fa';
 import { ReactComponent as CppSvg } from '../assets/icons/cpp.svg';
 import Card from '../components/UI/Card';
@@ -341,7 +342,7 @@ export default () => (
 
           <div className='lg:w-1/2 mr-16'>
             <div className='w-full relative'>
-              <div class='badge red transform scale-75'>
+              <div class='badge green transform scale-75'>
                 <div class='circle'>
                   <FaCode className='mt-3 ml-3 fa-icon' />
                 </div>
@@ -356,6 +357,38 @@ export default () => (
               Playground help you test, debug and even write your own projects
               online..
             </p>
+          </div>
+        </div>
+        <div
+          className='mt-40 w-full relative'
+          style={{
+            background:
+              'linear-gradient(-150deg, #222222 15%, #373737 70%, #3c4859 94%)',
+          }}
+        >
+          <div
+            class='badge red transform absolute'
+            style={{
+              top: 0,
+              left: '49%',
+              transform: 'translate(-50%, -50%) scale(0.75)',
+            }}
+          >
+            <div class='circle'>
+              <FaHeart className='mt-3 ml-3 fa-icon' />
+            </div>
+          </div>
+          <div className='text-gray-300 w-1/4 mx-auto text-center -mt-4'>
+            At BrosCode, our mission is to help you improve yourself and land
+            your dream job. We have a sizable repository of interview resources
+            for many companies. In the past few years, our users have landed
+            jobs at top companies around the world.
+          </div>
+
+          <div className='mt-24 w-full px-16 py-6 border-gray-300 flex justify-between text-white'>
+            <span>&copy; Brogrammers 2020.</span>
+
+            <div>About us</div>
           </div>
         </div>
       </div>
