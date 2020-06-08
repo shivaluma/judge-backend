@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.obj-animation {
+  animation: obj-length 4s infinite;
+}
+
+.obj-animation-d-1 {
+  animation: obj-length 4s 0.5s infinite;
+}
+
+.obj-animation-d-2 {
+  animation: obj-length 4s 1s infinite;
+}
+
+.obj-animation-d-3 {
+  animation: obj-length 4s 1.5s infinite;
+}
+
+.card-floating-0 {
+  animation: card-floating 4s infinite;
+}
+
+.card-floating-1 {
+  animation: card-floating 4s 0.5s infinite;
+}
+
+.card-floating-2 {
+  animation: card-floating 4s 1s infinite;
+}
+
+@keyframes card-floating {
+  0% {
+    box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
+    top: 0;
+  }
+  50% {
+    box-shadow: 0 25px 15px 0px rgba(0, 0, 0, 0.2);
+    top: -20px;
+  }
+  100% {
+    box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
+    top: 0;
+  }
+}
+
+@keyframes obj-length {
+  0% {
+  }
+  100% {
+    width: 64px;
+  }
+}
