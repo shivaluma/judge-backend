@@ -1,7 +1,16 @@
 import React from 'react';
 import NavButton from '../components/UI/NavButton';
 import ListObj from '../components/Ipad/ListObj';
-import { FaJava, FaJs, FaPython, FaGraduationCap } from 'react-icons/fa';
+import {
+  FaJava,
+  FaJs,
+  FaPython,
+  FaGraduationCap,
+  FaQuestion,
+  FaTrophy,
+  FaUsers,
+  FaCode,
+} from 'react-icons/fa';
 import { ReactComponent as CppSvg } from '../assets/icons/cpp.svg';
 import Card from '../components/UI/Card';
 export default () => (
@@ -226,12 +235,16 @@ export default () => (
             </div>
           </div>
         </div>
-        <div className='flex container mt-40 mb-64'>
+        <div className='flex container mt-40'>
           <div className='lg:w-1/2 text-right'>
-            <span className='text-teal-600 text-2xl flex items-center justify-end'>
-              Start Exploring!{' '}
-              <FaGraduationCap className='ml-4 inline-block text-3xl' />
-            </span>
+            <div className='flex items-center justify-end'>
+              <span className='text-2xl text-teal-700'>Start Exploring!</span>
+              <div class='badge teal transform scale-75'>
+                <div class='circle'>
+                  <FaGraduationCap className='mt-3 ml-3 fa-icon' />
+                </div>
+              </div>
+            </div>
             <p
               className='text-base text-gray-600 mt-4 leading-loose'
               style={{ textIndent: '5rem' }}
@@ -287,6 +300,62 @@ export default () => (
                 }
               />
             </div>
+          </div>
+        </div>
+
+        <div className='flex container mt-40'>
+          <div className='lg:w-1/2 mr-20'>
+            <div className='w-full relative'>
+              <div class='badge orange transform scale-75'>
+                <div class='circle'>
+                  <FaQuestion className='mt-3 ml-3 fa-icon' />
+                </div>
+              </div>
+
+              <div class='badge purple transform scale-75 -translate-x-12'>
+                <div class='circle'>
+                  <FaUsers className='mt-3 ml-3 fa-icon' />
+                </div>
+              </div>
+
+              <div class='badge blue transform scale-75 -translate-x-24'>
+                <div class='circle'>
+                  <FaTrophy className='mt-3 ml-3 fa-icon' />
+                </div>
+              </div>
+            </div>
+
+            <h3 className='text-2xl text-blue-500 block'>
+              Questions, Community & Contests
+            </h3>
+
+            <p className='text-md text-gray-800 leading-loose mt-3'>
+              Over 1550 questions for you to practice. Come and join one of the
+              largest tech communities with hundreds of thousands of active
+              users and participate in our contests to challenge yourself and
+              earn rewards.
+            </p>
+          </div>
+
+          {/* END */}
+
+          <div className='lg:w-1/2 mr-16'>
+            <div className='w-full relative'>
+              <div class='badge red transform scale-75'>
+                <div class='circle'>
+                  <FaCode className='mt-3 ml-3 fa-icon' />
+                </div>
+              </div>
+            </div>
+
+            <h3 className='text-2xl text-blue-500 block'>Developer</h3>
+
+            <p className='text-md text-gray-800 leading-loose mt-3'>
+              We now support 14 popular coding languages. At our core, BrosCode
+              is about developers. Our powerful development tools such as
+              Playground help you test, debug and even write your own projects
+              online..
+            </p>
           </div>
         </div>
       </div>
