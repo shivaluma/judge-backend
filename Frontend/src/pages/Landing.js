@@ -1,6 +1,7 @@
 import React from 'react';
 import NavButton from '../components/UI/NavButton';
 import ListObj from '../components/Ipad/ListObj';
+
 import {
   FaJava,
   FaJs,
@@ -35,7 +36,7 @@ export default () => (
               <NavButton text='Premium' to='/premium' color='#fea116' />
               <NavButton text='Explore' to='/premium' color='#fff' />
               <NavButton text='Product' to='/premium' color='#fff' />
-              <NavButton text='Sign In' to='/premium' color='#fff' />
+              <NavButton text='Sign In' to='/accounts/login' color='#fff' />
             </nav>
           </div>
         </div>
@@ -387,7 +388,6 @@ export default () => (
 
           <div className='mt-24 w-full px-16 py-6 border-gray-300 flex justify-between text-white'>
             <span>&copy; Brogrammers 2020.</span>
-
             <div>About us</div>
           </div>
         </div>
