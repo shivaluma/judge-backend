@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const compression = require('compression');
-const bodyParser = require('body-parser');
 const db = require('./configs/database');
+const passport = require('passport');
 const app = express();
 app.use(compression());
 
@@ -14,6 +14,10 @@ const router = require('./routes');
 //Routers Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(passport.initialize());
+require('./configs/passport')(passport);
+
 app.use('/api', router);
 app.get('/api', (req, res) => {
   res.send('Call /api for api call');

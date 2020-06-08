@@ -26,7 +26,10 @@ const getDb = () => {
   return _db;
 };
 
+const ObjectId = mongodb.ObjectId;
+
 module.exports = {
   initDb,
   getDb,
+  ObjectId,
 };
