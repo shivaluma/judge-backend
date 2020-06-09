@@ -1,47 +1,34 @@
 import React from 'react';
 import BeatLoader from 'react-spinners/BeatLoader';
+import Input from './Form/Input';
 export default ({
   username,
   pwd,
   handler,
-  disable,
   submitHandler,
   wrongInfo,
   loading,
 }) => {
   return (
     <form className='px-8 mt-8' onSubmit={submitHandler}>
-      <input
-        className='w-full px-2 py-3 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
+      <Input
+        target={username}
+        handleKey='username'
+        handler={handler}
         type='text'
         placeholder='Username...'
-        value={username.value}
-        onChange={(event) => handler(event.target.value, 'username')}
-        required
       />
-      {username.error ? (
-        <span className='mt-2 text-xs text-red-800 block text-left'>
-          {username.errorDesc}
-        </span>
-      ) : null}
 
-      <input
-        className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
+      <Input
+        target={pwd}
+        handleKey='pwd'
+        handler={handler}
         type='password'
         placeholder='Password...'
-        value={pwd.value}
-        onChange={(event) => handler(event.target.value, 'pwd')}
-        required
       />
 
-      {pwd.error ? (
-        <span className='mt-2 text-xs text-red-800 block text-left'>
-          {pwd.errorDesc}
-        </span>
-      ) : null}
-
-      {wrongInfo ? (
-        <span className='mt-2 text-xs text-red-800 block text-left'>
+      {wrongInfo && !loading ? (
+        <span className='mt-1 text-xs text-red-800 block text-left'>
           Invalid username or password.
         </span>
       ) : null}

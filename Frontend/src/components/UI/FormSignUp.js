@@ -1,34 +1,47 @@
 import React from 'react';
+import Input from './Form/Input';
 
-export default ({ mode }) => {
+export default ({
+  mode,
+  username,
+  pwd,
+  confirmPwd,
+  email,
+  handler,
+  submitHandler,
+}) => {
   return (
-    <form className='px-8 mt-8'>
-      <input
-        className='w-full px-2 py-3 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
+    <form className='px-8 mt-8' onSubmit={submitHandler}>
+      <Input
+        target={username}
+        handleKey='username'
+        handler={handler}
         type='text'
-        placeholder='Username'
-        required
+        placeholder='Username...'
       />
 
-      <input
-        className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
-        type='text'
-        placeholder='Password'
-        required
+      <Input
+        target={pwd}
+        handleKey='pwd'
+        handler={handler}
+        type='password'
+        placeholder='Password...'
       />
 
-      <input
-        className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
-        type='text'
-        placeholder='Confirm password'
-        required
+      <Input
+        target={confirmPwd}
+        handleKey='confirmPwd'
+        handler={handler}
+        type='password'
+        placeholder='Confirm password...'
       />
 
-      <input
-        className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
-        type='text'
-        placeholder='Email'
-        required
+      <Input
+        target={email}
+        handleKey='email'
+        handler={handler}
+        type='email'
+        placeholder='Email...'
       />
 
       <button
@@ -37,6 +50,9 @@ export default ({ mode }) => {
         style={{
           background: 'linear-gradient(to right, #8e2de2, #4a00e0)',
         }}
+        disabled={
+          username.error || pwd.error || confirmPwd.error || email.error
+        }
       >
         Sign {mode ? 'In' : 'Up'}
       </button>

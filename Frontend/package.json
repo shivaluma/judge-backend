@@ -12,7 +12,9 @@
     "react-icons": "^3.10.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "react-spinners": "^0.8.3"
+    "react-spinners": "^0.8.3",
+    "react-toastify": "^6.0.5",
+    "validator": "^13.0.0"
   },
   "scripts": {
     "build:css": "tailwind build src/assets/tailwind.css -o src/assets/style.css",

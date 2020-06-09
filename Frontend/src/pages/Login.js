@@ -3,10 +3,13 @@ import Header from '../components/UI/Header';
 import { FaCode, FaFacebookF, FaGoogle, FaGithub } from 'react-icons/fa';
 import FormSignIn from '../components/UI/FormSignIn';
 import FormSignUp from '../components/UI/FormSignUp';
-
+import isEmail from 'validator/lib/isEmail';
+import { toast, ToastContainer } from 'react-toastify';
 import API from '../api';
-export default () => {
-  const [mode, setMode] = useState(true);
+import 'react-toastify/dist/ReactToastify.css';
+
+export default ({ isLogin }) => {
+  const [mode, setMode] = useState(isLogin);
   const [formInfo, setFormInfo] = useState({
     username: {
       value: '',
@@ -36,8 +39,8 @@ export default () => {
   const [wrongInfo, setWrongInfo] = useState(false);
   const [isLoading, setLoading] = useState(false);
   useEffect(() => {
-    document.title = 'Login';
-  }, []);
+    document.title = mode ? 'Login' : 'Sign Up';
+  }, [mode]);
 
   const loginHandler = async (event) => {
     event.preventDefault();
@@ -50,8 +53,71 @@ export default () => {
     try {
       const response = await API.post('auth/login', body);
       console.log(response);
+      toast.success('🌟 Login successful!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } catch (err) {
       setWrongInfo(true);
+    }
+    setLoading(false);
+  };
+
+  const registerHandler = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    const body = {
+      username: formInfo.username.value,
+      password: formInfo.pwd.value,
+      confirmPassword: formInfo.confirmPwd.value,
+      email: formInfo.email.value,
+    };
+
+    try {
+      const response = await API.post('auth/signup', body);
+      console.log(response);
+      toast.success('🌟 Register successful!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setMode(true);
+    } catch (err) {
+      console.log(err.response);
+      if (
+        err.response.data.duplicate &&
+        err.response.data.duplicate.hasOwnProperty('username')
+      ) {
+        const newUsername = { ...formInfo.username };
+        newUsername.error = true;
+        newUsername.errorDesc = 'Username has exist.';
+        setFormInfo({
+          ...formInfo,
+          username: newUsername,
+        });
+      }
+
+      if (
+        err.response.data.duplicate &&
+        err.response.data.duplicate.hasOwnProperty('email')
+      ) {
+        const newEmail = { ...formInfo.email };
+        newEmail.error = true;
+        newEmail.errorDesc = 'Email has exist.';
+        setFormInfo({
+          ...formInfo,
+          email: newEmail,
+        });
+      }
     }
     setLoading(false);
   };
@@ -87,8 +153,30 @@ export default () => {
       }
       setFormInfo({ ...formInfo, pwd: newPwd });
     }
-    if (key === 'email') setFormInfo({ ...formInfo, email: value });
-    if (key === 'confirmPwd') setFormInfo({ ...formInfo, confirmPwd: value });
+    if (key === 'email') {
+      const newEmail = { ...formInfo.email };
+      newEmail.changed = true;
+      newEmail.value = value;
+      if (!isEmail(newEmail.value) && newEmail.changed) {
+        newEmail.error = true;
+        newEmail.errorDesc = 'Not a valid email.';
+      } else {
+        newEmail.error = false;
+      }
+      setFormInfo({ ...formInfo, email: newEmail });
+    }
+    if (key === 'confirmPwd') {
+      const newConfirmPwd = { ...formInfo.confirmPwd };
+      newConfirmPwd.changed = true;
+      newConfirmPwd.value = value;
+      if (newConfirmPwd.value !== formInfo.pwd.value) {
+        newConfirmPwd.error = true;
+        newConfirmPwd.errorDesc = 'Confirm password do not match.';
+      } else {
+        newConfirmPwd.error = false;
+      }
+      setFormInfo({ ...formInfo, confirmPwd: newConfirmPwd });
+    }
   };
 
   return (
@@ -100,7 +188,7 @@ export default () => {
       }}
     >
       <Header />
-
+      <ToastContainer />
       <div
         className='mt-32 mx-auto text-center bg-white'
         style={{ width: '400px' }}
@@ -119,7 +207,15 @@ export default () => {
             loading={isLoading}
           />
         ) : (
-          <FormSignUp />
+          <FormSignUp
+            username={formInfo.username}
+            pwd={formInfo.pwd}
+            confirmPwd={formInfo.confirmPwd}
+            email={formInfo.email}
+            handler={formChangeHandler}
+            submitHandler={registerHandler}
+            loading={isLoading}
+          />
         )}
         {mode ? (
           <div className='mt-3 text-sm px-8 flex justify-between text-teal-700'>
