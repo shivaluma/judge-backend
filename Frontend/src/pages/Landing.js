@@ -31,7 +31,9 @@ export default () => (
       <div className='absolute pt-4 w-full' style={{ top: '80px' }}>
         <div className='h-24 w-full'>
           <div className='container flex justify-between'>
-            <div className='text-xl font-normal text-white'>BrosCode</div>
+            <div className='text-xl font-normal text-white typo-round'>
+              BrosCode
+            </div>
             <nav className='flex'>
               <NavButton text='Premium' to='/premium' color='#fea116' />
               <NavButton text='Explore' to='/premium' color='#fff' />

@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'TypoRound';
+  src: url('./fonts/typo.woff2') format('woff2'),
+    url('./fonts//typo.woff') format('woff'); /* Pretty Modern Browsers */
+}
+
+* {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.typo-round {
+  font-family: 'TypoRound', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 .badge {
   position: relative;
   margin: 0em 1em;
