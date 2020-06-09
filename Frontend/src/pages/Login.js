@@ -44,6 +44,7 @@ export default ({ isLogin }) => {
 
   const loginHandler = async (event) => {
     event.preventDefault();
+    if (isLoading) return;
     setLoading(true);
     const body = {
       username: formInfo.username.value,
@@ -70,6 +71,8 @@ export default ({ isLogin }) => {
 
   const registerHandler = async (event) => {
     event.preventDefault();
+    event.preventDefault();
+    if (isLoading) return;
     setLoading(true);
     const body = {
       username: formInfo.username.value,
