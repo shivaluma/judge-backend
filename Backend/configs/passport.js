@@ -14,9 +14,13 @@ module.exports = (passport) => {
       db.getDb()
         .db()
         .collection('users')
-        .findOne({ _id: db.ObjectId(jwt_payload.id) })
+        .findOne(
+          { _id: db.ObjectId(jwt_payload.id) },
+          { projection: { password: 0 } }
+        )
         .then((user) => {
           if (user) {
+            console.log(user);
             return done(null, user);
           }
           return done(null, false, { message: 'Invalid token' });
