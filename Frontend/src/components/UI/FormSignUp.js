@@ -7,24 +7,28 @@ export default ({ mode }) => {
         className='w-full px-2 py-3 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
         type='text'
         placeholder='Username'
+        required
       />
 
       <input
         className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
         type='text'
         placeholder='Password'
+        required
       />
 
       <input
         className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
         type='text'
         placeholder='Confirm password'
+        required
       />
 
       <input
         className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
         type='text'
         placeholder='Email'
+        required
       />
 
       <button

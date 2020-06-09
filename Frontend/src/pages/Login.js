@@ -3,11 +3,82 @@ import Header from '../components/UI/Header';
 import { FaCode, FaFacebookF, FaGoogle, FaGithub } from 'react-icons/fa';
 import FormSignIn from '../components/UI/FormSignIn';
 import FormSignUp from '../components/UI/FormSignUp';
+
+import API from '../api';
 export default () => {
   const [mode, setMode] = useState(true);
+  const [formInfo, setFormInfo] = useState({
+    username: {
+      value: '',
+      error: true,
+      errorDesc: '',
+      changed: false,
+    },
+    email: {
+      value: '',
+      error: true,
+      errorDesc: '',
+      changed: false,
+    },
+    pwd: {
+      value: '',
+      error: true,
+      errorDesc: '',
+      changed: false,
+    },
+    confirmPwd: {
+      value: '',
+      error: true,
+      errorDesc: '',
+      changed: false,
+    },
+  });
+
   useEffect(() => {
     document.title = 'Login';
   }, []);
+
+  const loginHandler = async (event) => {
+    event.preventDefault();
+    const response = await API.post('auth/login', {
+      username: formInfo.username,
+      password: formInfo.pwd,
+    });
+    console.log(response);
+  };
+
+  const formChangeHandler = (value, key) => {
+    if (key === 'username') {
+      const newUsername = { ...formInfo.username };
+      newUsername.changed = true;
+      newUsername.value = value;
+      if (newUsername.value.length === 0 && newUsername.changed) {
+        newUsername.error = true;
+        newUsername.errorDesc = 'Username cannot be empty.';
+      } else {
+        newUsername.error = false;
+      }
+      setFormInfo({
+        ...formInfo,
+        username: newUsername,
+      });
+    }
+    if (key === 'pwd') {
+      const newPwd = { ...formInfo.pwd };
+      newPwd.changed = true;
+      newPwd.value = value;
+      if (newPwd.value.length === 0 && newPwd.changed) {
+        newPwd.error = true;
+        newPwd.errorDesc = 'Password cannot be empty.';
+      } else {
+        newPwd.error = false;
+      }
+      setFormInfo({ ...formInfo, pwd: newPwd });
+    }
+    if (key === 'email') setFormInfo({ ...formInfo, email: value });
+    if (key === 'confirmPwd') setFormInfo({ ...formInfo, confirmPwd: value });
+  };
+
   return (
     <div
       className='w-screen h-screen'
@@ -26,7 +97,16 @@ export default () => {
           <FaCode className='text-2xl text-black' />
           <span className='typo-round text-2xl'>BrosCode</span>
         </div>
-        {mode ? <FormSignIn /> : <FormSignUp />}
+        {mode ? (
+          <FormSignIn
+            username={formInfo.username}
+            pwd={formInfo.pwd}
+            handler={formChangeHandler}
+            submitHandler={loginHandler}
+          />
+        ) : (
+          <FormSignUp />
+        )}
         {mode ? (
           <div className='mt-3 text-sm px-8 flex justify-between text-teal-700'>
             <span>Forgot Password?</span>
