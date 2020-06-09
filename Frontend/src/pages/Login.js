@@ -33,21 +33,33 @@ export default () => {
       changed: false,
     },
   });
-
+  const [wrongInfo, setWrongInfo] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   useEffect(() => {
     document.title = 'Login';
   }, []);
 
   const loginHandler = async (event) => {
     event.preventDefault();
-    const response = await API.post('auth/login', {
-      username: formInfo.username,
-      password: formInfo.pwd,
-    });
-    console.log(response);
+    setLoading(true);
+    const body = {
+      username: formInfo.username.value,
+      password: formInfo.pwd.value,
+    };
+
+    try {
+      const response = await API.post('auth/login', body);
+      console.log(response);
+    } catch (err) {
+      setWrongInfo(true);
+    }
+    setLoading(false);
   };
 
   const formChangeHandler = (value, key) => {
+    if (wrongInfo && mode) {
+      setWrongInfo(false);
+    }
     if (key === 'username') {
       const newUsername = { ...formInfo.username };
       newUsername.changed = true;
@@ -103,6 +115,8 @@ export default () => {
             pwd={formInfo.pwd}
             handler={formChangeHandler}
             submitHandler={loginHandler}
+            wrongInfo={wrongInfo}
+            loading={isLoading}
           />
         ) : (
           <FormSignUp />

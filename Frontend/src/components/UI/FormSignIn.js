@@ -1,6 +1,14 @@
 import React from 'react';
-
-export default ({ username, pwd, handler, disable, submitHandler }) => {
+import BeatLoader from 'react-spinners/BeatLoader';
+export default ({
+  username,
+  pwd,
+  handler,
+  disable,
+  submitHandler,
+  wrongInfo,
+  loading,
+}) => {
   return (
     <form className='px-8 mt-8' onSubmit={submitHandler}>
       <input
@@ -31,6 +39,14 @@ export default ({ username, pwd, handler, disable, submitHandler }) => {
           {pwd.errorDesc}
         </span>
       ) : null}
+
+      {wrongInfo ? (
+        <span className='mt-2 text-xs text-red-800 block text-left'>
+          Invalid username or password.
+        </span>
+      ) : null}
+
+      <BeatLoader size={10} color={'#222'} loading={loading} />
 
       <button
         type='submit'
