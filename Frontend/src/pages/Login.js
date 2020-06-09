@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/UI/Header';
 import { FaCode, FaFacebookF, FaGoogle, FaGithub } from 'react-icons/fa';
+import FormSignIn from '../components/UI/FormSignIn';
+import FormSignUp from '../components/UI/FormSignUp';
 export default () => {
+  const [mode, setMode] = useState(true);
+  useEffect(() => {
+    document.title = 'Login';
+  }, []);
   return (
     <div
       className='w-screen h-screen'
@@ -20,38 +26,33 @@ export default () => {
           <FaCode className='text-2xl text-black' />
           <span className='typo-round text-2xl'>BrosCode</span>
         </div>
+        {mode ? <FormSignIn /> : <FormSignUp />}
+        {mode ? (
+          <div className='mt-3 text-sm px-8 flex justify-between text-teal-700'>
+            <span>Forgot Password?</span>
+            <span
+              className='cursor-pointer hover:underline'
+              onClick={() => setMode(false)}
+            >
+              Sign Up
+            </span>
+          </div>
+        ) : (
+          <div className='mt-3 text-sm px-8 text-center text-gray-500'>
+            Have an account?{' '}
+            <span
+              className='cursor-pointer hover:underline text-teal-700'
+              onClick={() => setMode(true)}
+            >
+              Login
+            </span>
+          </div>
+        )}
 
-        <form className='px-8 mt-8'>
-          <input
-            className='w-full px-2 py-3 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
-            type='text'
-            placeholder='Username or email..'
-          />
-
-          <input
-            className='w-full px-2 py-3 mt-6 border border-gray-400 placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all duration-300'
-            type='text'
-            placeholder='Password..'
-          />
-
-          <button
-            type='submit'
-            className='w-full py-3 rounded-md bg-blue-600 mt-8 text-white text-sm hover:opacity-75 transition-all duration-300'
-            style={{
-              background: 'linear-gradient(to right, #8e2de2, #4a00e0)',
-            }}
-          >
-            Sign In
-          </button>
-        </form>
-
-        <div className='mt-3 text-sm px-8 flex justify-between text-teal-700'>
-          <span>Forgot Password?</span>
-          <span>Sign Up</span>
-        </div>
-
-        <div class='mx-auto pb-1 mt-2'>
-          <span class='text-center text-sm text-gray-500'>or sign up with</span>
+        <div className='mx-auto pb-1 mt-2'>
+          <span className='text-center text-sm text-gray-500'>
+            or sign {mode ? 'up' : 'in'} with
+          </span>
         </div>
 
         <div className='flex justify-between px-8 mt-1 pb-16'>
