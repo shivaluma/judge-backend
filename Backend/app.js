@@ -3,9 +3,10 @@ const express = require('express');
 const compression = require('compression');
 const db = require('./configs/database');
 const passport = require('passport');
+const cors = require('cors');
 const app = express();
 app.use(compression());
-
+app.use(cors());
 //Import Routers
 const router = require('./routes');
 
