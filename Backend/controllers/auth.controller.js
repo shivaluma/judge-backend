@@ -59,3 +59,15 @@ exports.postLogin = async (req, res) => {
     return res.status(401).json({ message: 'Invalid username or password.' });
   }
 };
+
+exports.postGoogle = (req, res) => {
+  console.log('postgoogle called');
+  if (!req.user) {
+    return res.status(401).json('User not authenticated');
+  }
+  return res.status(200).json({ user: req.user });
+};
+
+exports.postGoogleCallback = (req, res) => {
+  res.status(201).json('Created');
+};
