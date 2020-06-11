@@ -1,7 +1,7 @@
 import React from 'react';
 import NavButton from '../components/UI/NavButton';
 import ListObj from '../components/Ipad/ListObj';
-
+import { Link } from 'react-router-dom';
 import {
   FaJava,
   FaJs,
@@ -12,6 +12,7 @@ import {
   FaUsers,
   FaCode,
   FaHeart,
+  FaAngleRight,
 } from 'react-icons/fa';
 import { ReactComponent as CppSvg } from '../assets/icons/cpp.svg';
 import Card from '../components/UI/Card';
@@ -233,9 +234,12 @@ export default () => (
                 expand your knowledge and prepare for technical interviews.
               </p>
 
-              <button className='px-6 py-2 mt-8 bg-blue-600 rounded-full text-white focus:outline-none'>
-                Create Account
-              </button>
+              <Link to='/accounts/signup'>
+                <div className='px-6 py-2 mt-8 bg-blue-600 rounded-full text-white focus:outline-none w-48 mx-auto flex items-center'>
+                  <span>Create Account</span>
+                  <FaAngleRight className='ml-2 inline-block text-xl' />
+                </div>
+              </Link>
             </div>
           </div>
         </div>
