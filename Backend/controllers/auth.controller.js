@@ -61,13 +61,8 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.postGoogle = (req, res) => {
-  console.log('postgoogle called');
   if (!req.user) {
     return res.status(401).json('User not authenticated');
   }
   return res.status(200).json({ user: req.user });
-};
-
-exports.postGoogleCallback = (req, res) => {
-  res.status(201).json('Created');
 };

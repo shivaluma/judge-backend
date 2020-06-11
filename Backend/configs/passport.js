@@ -33,10 +33,8 @@ module.exports = (passport) => {
   passport.use(
     new GoogleStrategy(
       {
-        clientID:
-          '796130238984-t9jd9p7s9178cngceio9ctipia1rumfm.apps.googleusercontent.com',
-        clientSecret: 'c8YgpR3qv_Mxfwdf8EeUG2EX',
-        callbackURL: '/api/auth/google/callback',
+        clientID: keys.GOOGLE_CLIENT_ID,
+        clientSecret: keys.GOOGLE_CLIENT_SECRET,
       },
       function (accessToken, refreshToken, profile, done) {
         db.getDb()
