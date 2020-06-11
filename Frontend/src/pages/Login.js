@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
 import Header from '../components/UI/Header';
 import { FaCode, FaFacebookF, FaGoogle, FaGithub } from 'react-icons/fa';
@@ -7,7 +8,8 @@ import isEmail from 'validator/lib/isEmail';
 import { toast, ToastContainer } from 'react-toastify';
 import API from '../api';
 import 'react-toastify/dist/ReactToastify.css';
-
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { GoogleLogin } from 'react-google-login';
 export default ({ isLogin }) => {
   const [mode, setMode] = useState(isLogin);
   const [formInfo, setFormInfo] = useState({
@@ -123,6 +125,13 @@ export default ({ isLogin }) => {
       }
     }
     setLoading(false);
+  };
+
+  const facebookLoginHandler = (response) => {
+    console.log(response);
+  };
+  const googleLoginHandler = async (response) => {
+    console.log(response);
   };
 
   const formChangeHandler = (value, key) => {
@@ -249,13 +258,35 @@ export default ({ isLogin }) => {
         </div>
 
         <div className='flex justify-between px-8 mt-1 pb-16'>
-          <button className='text-blue-700 px-10 py-3 border-blue-700 border-2 rounded-lg hover:bg-blue-700 hover:text-white transition-all duration-300 focus:outline-none'>
-            <FaFacebookF />
-          </button>
+          <FacebookLogin
+            appId='297734224952735'
+            callback={facebookLoginHandler}
+            render={(renderProps) => (
+              <button
+                className='text-blue-700 px-10 py-3 border-blue-700 border-2 rounded-lg hover:bg-blue-700 hover:text-white transition-all duration-300 focus:outline-none'
+                onClick={renderProps.onClick}
+              >
+                <FaFacebookF />
+              </button>
+            )}
+          />
 
-          <button className='text-red-700 px-10 py-3 border-red-700 border-2 rounded-lg hover:bg-red-700 hover:text-white transition-all duration-300 focus:outline-none'>
-            <FaGoogle />
-          </button>
+          <GoogleLogin
+            clientId='796130238984-t9jd9p7s9178cngceio9ctipia1rumfm.apps.googleusercontent.com'
+            render={(renderProps) => (
+              <button
+                className='text-red-700 px-10 py-3 border-red-700 border-2 rounded-lg hover:bg-red-700 hover:text-white transition-all duration-300 focus:outline-none'
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+              >
+                <FaGoogle />
+              </button>
+            )}
+            buttonText='Login'
+            onSuccess={googleLoginHandler}
+            onFailure={googleLoginHandler}
+            cookiePolicy={'single_host_origin'}
+          />
 
           <button className='text-black px-10 py-3 border-black border-2 rounded-lg hover:bg-black hover:text-white transition-all duration-300 focus:outline-none'>
             <FaGithub />

@@ -243,8 +243,8 @@ export default () => (
           <div className='lg:w-1/2 text-right'>
             <div className='flex items-center justify-end'>
               <span className='text-2xl text-teal-700'>Start Exploring!</span>
-              <div class='badge teal transform scale-75'>
-                <div class='circle'>
+              <div className='badge teal transform scale-75'>
+                <div className='circle'>
                   <FaGraduationCap className='mt-3 ml-3 fa-icon' />
                 </div>
               </div>
@@ -310,20 +310,20 @@ export default () => (
         <div className='flex container mt-40'>
           <div className='lg:w-1/2 mr-20'>
             <div className='w-full relative'>
-              <div class='badge orange transform scale-75'>
-                <div class='circle'>
+              <div className='badge orange transform scale-75'>
+                <div className='circle'>
                   <FaQuestion className='mt-3 ml-3 fa-icon' />
                 </div>
               </div>
 
-              <div class='badge purple transform scale-75 -translate-x-12'>
-                <div class='circle'>
+              <div className='badge purple transform scale-75 -translate-x-12'>
+                <div className='circle'>
                   <FaUsers className='mt-3 ml-3 fa-icon' />
                 </div>
               </div>
 
-              <div class='badge blue transform scale-75 -translate-x-24'>
-                <div class='circle'>
+              <div className='badge blue transform scale-75 -translate-x-24'>
+                <div className='circle'>
                   <FaTrophy className='mt-3 ml-3 fa-icon' />
                 </div>
               </div>
@@ -345,8 +345,8 @@ export default () => (
 
           <div className='lg:w-1/2 mr-16'>
             <div className='w-full relative'>
-              <div class='badge green transform scale-75'>
-                <div class='circle'>
+              <div className='badge green transform scale-75'>
+                <div className='circle'>
                   <FaCode className='mt-3 ml-3 fa-icon' />
                 </div>
               </div>
@@ -370,14 +370,14 @@ export default () => (
           }}
         >
           <div
-            class='badge red transform absolute'
+            className='badge red transform absolute'
             style={{
               top: 0,
               left: '49%',
               transform: 'translate(-50%, -50%) scale(0.75)',
             }}
           >
-            <div class='circle'>
+            <div className='circle'>
               <FaHeart className='mt-3 ml-3 fa-icon' />
             </div>
           </div>
