@@ -1,5 +1,5 @@
 const JwtStrategy = require('passport-jwt').Strategy;
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleTokenStrategy = require('passport-token-google2').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const db = require('./database');
 const keys = require('./keys');
@@ -31,12 +31,13 @@ module.exports = (passport) => {
   );
 
   passport.use(
-    new GoogleStrategy(
+    new GoogleTokenStrategy(
       {
         clientID: keys.GOOGLE_CLIENT_ID,
         clientSecret: keys.GOOGLE_CLIENT_SECRET,
       },
       function (accessToken, refreshToken, profile, done) {
+        console.log(profile, accessToken);
         db.getDb()
           .db()
           .collection('users')
