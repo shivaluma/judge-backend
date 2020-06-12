@@ -1,9 +1,9 @@
 runtime: nodejs12
 env: standard
-network:
-  session_affinity: true
+
 automatic_scaling:
+  min_instances: 0
   min_idle_instances: 1
-  max_idle_instances: 3
-  min_pending_latency: 15000ms
-  max_pending_latency: 15000ms
+  max_idle_instances: automatic
+  min_pending_latency: 30ms
+  max_pending_latency: 200ms
