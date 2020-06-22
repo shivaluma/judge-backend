@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const keys = require('../configs/keys');
+const got = require('got');
+
 exports.postSignUp = async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
   if (!username || !email || !password || !confirmPassword)
@@ -60,10 +62,124 @@ exports.postLogin = async (req, res) => {
   }
 };
 
-exports.postGoogle = (req, res) => {
-  console.log('Post Google Called');
-  if (!req.user) {
-    return res.status(401).json('User not authenticated');
+exports.postGoogle = async (req, res) => {
+  const { ggAccessToken } = req.body;
+  try {
+    const query = `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${ggAccessToken}`;
+    const response = await got(`${query}`).json();
+    console.log(response);
+    const user = await db
+      .getDb()
+      .db()
+      .collection('users')
+      .findOne({
+        $or: [{ googleId: response.sub }, { email: response.email }],
+      });
+
+    if (!user) {
+      db.getDb()
+        .db()
+        .collection('users')
+        .insertOne({
+          username: null,
+          email: response.email,
+          password: 'nopassword',
+          googleId: response.sub,
+        })
+        .then((user) => {
+          const payload = {
+            id: user._id,
+            username: user.username,
+          };
+          const accessToken = jwt.sign(payload, keys.secretOrKey);
+          return res
+            .status(200)
+            .json({ message: 'Login successfully.', accessToken });
+        })
+        .catch((err) =>
+          res.status(400).json({
+            message:
+              'Cannot create account through login google, please try again',
+          })
+        );
+    }
+
+    if (user.googleId !== response.sub)
+      return res.status(409).json({
+        message:
+          'There is an account with this email address, please login then bind to this google account.',
+      });
+
+    const payload = {
+      id: user._id,
+      username: user.username,
+    };
+    const accessToken = jwt.sign(payload, keys.secretOrKey);
+    return res
+      .status(200)
+      .json({ message: 'Login successfully.', accessToken });
+  } catch (error) {
+    return res.status(500).json({ error });
   }
-  return res.status(200).json({ user: req.user });
+};
+
+exports.postFacebook = async (req, res) => {
+  const { id, fbAccessToken } = req.body;
+  try {
+    const query = `https://graph.facebook.com/${id}?fields=birthday,email,picture&access_token=${fbAccessToken}`;
+    const response = await got(`${query}`).json();
+    console.log(response);
+    const user = await db
+      .getDb()
+      .db()
+      .collection('users')
+      .findOne({
+        $or: [{ facebookId: response.id }, { email: response.email }],
+      });
+
+    if (!user) {
+      db.getDb()
+        .db()
+        .collection('users')
+        .insertOne({
+          username: null,
+          email: response.email,
+          password: 'nopassword',
+          facebookId: response.id,
+        })
+        .then((user) => {
+          const payload = {
+            id: user._id,
+            username: user.username,
+          };
+          const accessToken = jwt.sign(payload, keys.secretOrKey);
+          return res
+            .status(200)
+            .json({ message: 'Login successfully.', accessToken });
+        })
+        .catch((err) =>
+          res.status(400).json({
+            message:
+              'Cannot create account through login facebook, please try again',
+          })
+        );
+    }
+
+    if (user.facebookId !== response.id)
+      return res.status(409).json({
+        message:
+          'There is an account with this email address, please login then bind to this facebook account.',
+      });
+
+    const payload = {
+      id: user._id,
+      username: user.username,
+    };
+    const accessToken = jwt.sign(payload, keys.secretOrKey);
+    return res
+      .status(200)
+      .json({ message: 'Login successfully.', accessToken });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
 };
