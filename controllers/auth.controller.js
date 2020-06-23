@@ -52,11 +52,12 @@ exports.postLogin = async (req, res) => {
     const payload = {
       id: user._id,
       username: user.username,
+      avatar: user.avatar,
     };
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: 'Login successfully.', accessToken });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid username or password.' });
   }
@@ -77,31 +78,20 @@ exports.postGoogle = async (req, res) => {
       });
 
     if (!user) {
-      db.getDb()
-        .db()
-        .collection('users')
-        .insertOne({
-          username: null,
-          email: response.email,
-          password: 'nopassword',
-          googleId: response.sub,
-        })
-        .then((user) => {
-          const payload = {
-            id: user._id,
-            username: user.username,
-          };
-          const accessToken = jwt.sign(payload, keys.secretOrKey);
-          return res
-            .status(200)
-            .json({ message: 'Login successfully.', accessToken });
-        })
-        .catch((err) =>
-          res.status(400).json({
-            message:
-              'Cannot create account through login google, please try again',
-          })
-        );
+      const user = db.getDb().db().collection('users').insertOne({
+        username: null,
+        email: response.email,
+        password: 'nopassword',
+        googleId: response.sub,
+      });
+      const payload = {
+        id: user._id,
+        username: user.username,
+      };
+      const accessToken = jwt.sign(payload, keys.secretOrKey);
+      return res
+        .status(200)
+        .json({ message: 'Login successfully.', accessToken, user: payload });
     }
 
     if (user.googleId !== response.sub)
@@ -117,7 +107,7 @@ exports.postGoogle = async (req, res) => {
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: 'Login successfully.', accessToken });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
     return res.status(500).json({ error });
   }
@@ -155,7 +145,11 @@ exports.postFacebook = async (req, res) => {
           const accessToken = jwt.sign(payload, keys.secretOrKey);
           return res
             .status(200)
-            .json({ message: 'Login successfully.', accessToken });
+            .json({
+              message: 'Login successfully.',
+              accessToken,
+              user: payload,
+            });
         })
         .catch((err) =>
           res.status(400).json({
@@ -178,7 +172,7 @@ exports.postFacebook = async (req, res) => {
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: 'Login successfully.', accessToken });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
     return res.status(500).json({ error });
   }

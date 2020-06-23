@@ -22,6 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 require('./configs/passport')(passport);
 
+app.get('/_ah/warmup', async (req, res) => {
+  await db.initDb((err, db) => {
+    if (err) console.log('Connect to DB failed');
+    else console.log('DB connected');
+  });
+  return res.status(200).end();
+});
+
 app.use('/api', router);
 app.get('/api', (req, res) => {
   res.send('BrosJudge Backend System');
