@@ -4,6 +4,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const keys = require('../configs/keys');
 const got = require('got');
+const { v4: uuidv4 } = require('uuid');
 
 exports.postSignUp = async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
@@ -78,20 +79,33 @@ exports.postGoogle = async (req, res) => {
       });
 
     if (!user) {
-      const user = db.getDb().db().collection('users').insertOne({
-        username: null,
-        email: response.email,
+      const usernameToken = uuidv4();
+      db.getDb().db().collection('users').insertOne({
+        username: usernameToken,
+        email: usernameToken,
         password: 'nopassword',
         googleId: response.sub,
+        usernameToken,
       });
-      const payload = {
-        id: user._id,
-        username: user.username,
-      };
-      const accessToken = jwt.sign(payload, keys.secretOrKey);
-      return res
-        .status(200)
-        .json({ message: 'Login successfully.', accessToken, user: payload });
+
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken,
+        email: response.email,
+      });
+    }
+
+    if (user.usernameToken) {
+      const usernameToken = uuidv4();
+      db.getDb()
+        .db()
+        .collection('users')
+        .updateOne({ _id: user._id }, { $set: { usernameToken } });
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken,
+        email: response.email,
+      });
     }
 
     if (user.googleId !== response.sub)
@@ -111,6 +125,50 @@ exports.postGoogle = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error });
   }
+};
+
+exports.getCheckUsernameValid = async (req, res) => {
+  const { username } = req.query;
+
+  if (!username)
+    return res.status(400).json({ message: 'Not a valid username.' });
+  if (!validator.isAlphanumeric(username))
+    return res.status(400).json({ message: 'Not a valid username.' });
+  const user = await db
+    .getDb()
+    .db()
+    .collection('users')
+    .findOne({ username: username });
+
+  if (user)
+    return res.status(409).json({
+      message:
+        'This username is already used by another user, please choose another username.',
+    });
+  return res.status(200).json({
+    message: 'This username is valid.',
+  });
+};
+
+exports.getCheckEmailValid = async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ message: 'Not a valid email.' });
+  if (!validator.isEmail(email))
+    return res.status(400).json({ message: 'Not a valid email.' });
+  const user = await db
+    .getDb()
+    .db()
+    .collection('users')
+    .findOne({ email: email });
+
+  if (user)
+    return res.status(409).json({
+      message:
+        'This email is already used by another user, please choose another email.',
+    });
+  return res.status(200).json({
+    message: 'This email is valid.',
+  });
 };
 
 exports.postFacebook = async (req, res) => {
@@ -143,13 +201,11 @@ exports.postFacebook = async (req, res) => {
             username: user.username,
           };
           const accessToken = jwt.sign(payload, keys.secretOrKey);
-          return res
-            .status(200)
-            .json({
-              message: 'Login successfully.',
-              accessToken,
-              user: payload,
-            });
+          return res.status(200).json({
+            message: 'Login successfully.',
+            accessToken,
+            user: payload,
+          });
         })
         .catch((err) =>
           res.status(400).json({
