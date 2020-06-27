@@ -95,24 +95,19 @@ exports.postGoogle = async (req, res) => {
       });
     }
 
-    if (user.usernameToken) {
-      const usernameToken = uuidv4();
-      db.getDb()
-        .db()
-        .collection('users')
-        .updateOne({ _id: user._id }, { $set: { usernameToken } });
-      return res.status(302).json({
-        message: 'No username found, please choose a username.',
-        usernameToken,
-        email: response.email,
-      });
-    }
-
     if (user.googleId !== response.sub)
       return res.status(409).json({
         message:
           'There is an account with this email address, please login then bind to this google account.',
       });
+
+    if (user.usernameToken) {
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken: user.usernameToken,
+        email: response.email,
+      });
+    }
 
     const payload = {
       id: user._id,
@@ -186,40 +181,35 @@ exports.postFacebook = async (req, res) => {
       });
 
     if (!user) {
-      db.getDb()
-        .db()
-        .collection('users')
-        .insertOne({
-          username: null,
-          email: response.email,
-          password: 'nopassword',
-          facebookId: response.id,
-        })
-        .then((user) => {
-          const payload = {
-            id: user._id,
-            username: user.username,
-          };
-          const accessToken = jwt.sign(payload, keys.secretOrKey);
-          return res.status(200).json({
-            message: 'Login successfully.',
-            accessToken,
-            user: payload,
-          });
-        })
-        .catch((err) =>
-          res.status(400).json({
-            message:
-              'Cannot create account through login facebook, please try again',
-          })
-        );
+      const usernameToken = uuidv4();
+      db.getDb().db().collection('users').insertOne({
+        username: usernameToken,
+        email: usernameToken,
+        password: 'nopassword',
+        facebookId: response.id,
+        usernameToken,
+      });
+
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken,
+        email: response.email,
+      });
     }
 
     if (user.facebookId !== response.id)
       return res.status(409).json({
         message:
-          'There is an account with this email address, please login then bind to this facebook account.',
+          'There is an account with this email address, please login then bind to this google account.',
       });
+
+    if (user.usernameToken) {
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken: user.usernameToken,
+        email: response.email,
+      });
+    }
 
     const payload = {
       id: user._id,
@@ -231,5 +221,51 @@ exports.postFacebook = async (req, res) => {
       .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
     return res.status(500).json({ error });
+  }
+};
+
+exports.postUpdateUsername = async (req, res) => {
+  const { usernameToken, username, email } = req.body;
+  console.log(usernameToken, username, email);
+  try {
+    const user = await db
+      .getDb()
+      .db()
+      .collection('users')
+      .findOneAndUpdate(
+        {
+          usernameToken: usernameToken,
+        },
+        {
+          $set: {
+            username: username,
+            email: email,
+            usernameToken: null,
+          },
+        },
+        { returnOriginal: false, returnNewDocument: true }
+      );
+
+    if (!user.value)
+      return res.status(400).json({
+        message:
+          'Some error occurs, please contact the administrator for help.',
+      });
+
+    const payload = {
+      id: user.value._id,
+      username: user.value.username,
+    };
+
+    const accessToken = jwt.sign(payload, keys.secretOrKey);
+    return res.status(200).json({
+      message: 'Create account successfully.',
+      accessToken,
+      user: payload,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Some error occurs, please contact the administrator for help.',
+    });
   }
 };

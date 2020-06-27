@@ -11,4 +11,7 @@ router.post('/signup', authController.postSignUp);
 
 router.post('/google', authController.postGoogle);
 router.post('/facebook', authController.postFacebook);
+
+router.post('/update-username', authController.postUpdateUsername);
+
 module.exports = router;
