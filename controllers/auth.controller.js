@@ -181,40 +181,35 @@ exports.postFacebook = async (req, res) => {
       });
 
     if (!user) {
-      db.getDb()
-        .db()
-        .collection('users')
-        .insertOne({
-          username: null,
-          email: response.email,
-          password: 'nopassword',
-          facebookId: response.id,
-        })
-        .then((user) => {
-          const payload = {
-            id: user._id,
-            username: user.username,
-          };
-          const accessToken = jwt.sign(payload, keys.secretOrKey);
-          return res.status(200).json({
-            message: 'Login successfully.',
-            accessToken,
-            user: payload,
-          });
-        })
-        .catch((err) =>
-          res.status(400).json({
-            message:
-              'Cannot create account through login facebook, please try again',
-          })
-        );
+      const usernameToken = uuidv4();
+      db.getDb().db().collection('users').insertOne({
+        username: usernameToken,
+        email: usernameToken,
+        password: 'nopassword',
+        facebookId: response.id,
+        usernameToken,
+      });
+
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken,
+        email: response.email,
+      });
     }
 
     if (user.facebookId !== response.id)
       return res.status(409).json({
         message:
-          'There is an account with this email address, please login then bind to this facebook account.',
+          'There is an account with this email address, please login then bind to this google account.',
       });
+
+    if (user.usernameToken) {
+      return res.status(302).json({
+        message: 'No username found, please choose a username.',
+        usernameToken: user.usernameToken,
+        email: response.email,
+      });
+    }
 
     const payload = {
       id: user._id,
