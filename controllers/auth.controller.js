@@ -4,6 +4,8 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const keys = require('../configs/keys');
 const got = require('got');
+
+const { User } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 
 exports.postSignUp = async (req, res) => {
@@ -17,23 +19,23 @@ exports.postSignUp = async (req, res) => {
   if (password !== confirmPassword)
     return res.status(400).json({ message: 'Password do not match.' });
   const hashedPassword = await bcrypt.hash(password, 12);
-  db.getDb()
-    .db()
-    .collection('users')
-    .insertOne({
+
+  try {
+    await User.create({
       username,
-      email,
       password: hashedPassword,
-    })
-    .then((_) =>
-      res.status(201).json({ message: 'Create account successfully' })
-    )
-    .catch((err) =>
-      res.status(400).json({
-        message: 'Cannot create account',
-        duplicate: err.keyValue,
-      })
-    );
+      email,
+    });
+    res.status(201).json({ message: 'Create account successfully' });
+  } catch (err) {
+    console.log(err.errors[0].path.split('.')[1]);
+    return res.status(400).json({
+      message: 'Cannot create account',
+      duplicate: {
+        [err.errors[0].path.split('.')[1]]: true,
+      },
+    });
+  }
 };
 
 exports.postLogin = async (req, res) => {
@@ -41,19 +43,26 @@ exports.postLogin = async (req, res) => {
   if (!username || !password)
     return res.status(400).json({ message: 'Please input all fields.' });
   try {
-    const user = await db
-      .getDb()
-      .db()
-      .collection('users')
-      .findOne({ username });
+    const user = await User.findOne({
+      attributes: ['id', 'username', 'password', 'avatar', 'role'],
+      where: {
+        username: username,
+      },
+    });
+
+    console.log(user);
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid)
       return res.status(401).json({ message: 'Invalid username or password.' });
     const payload = {
-      id: user._id,
+      id: user.id,
       username: user.username,
       avatar: user.avatar,
+      role: user.role,
     };
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
