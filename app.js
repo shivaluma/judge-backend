@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const compression = require('compression');
-const db = require('./configs/database');
+const db = require('./models');
+
 const passport = require('passport');
 const cors = require('cors');
 const app = express();
@@ -9,11 +10,6 @@ app.use(compression());
 app.use(cors());
 //Import Routers
 const router = require('./routes');
-
-db.initDb((err, db) => {
-  if (err) console.log('Connect to DB failed');
-  else console.log('DB connected');
-});
 
 //Routers Middlewares
 app.use(express.json());
@@ -37,6 +33,8 @@ app.get('/api', (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3003;
-app.listen(PORT, () => {
-  console.log('> Currently listen on port ', PORT);
+db.sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log('> Currently listen on port ', PORT);
+  });
 });
