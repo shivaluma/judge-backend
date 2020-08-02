@@ -7,3 +7,6 @@ automatic_scaling:
   max_idle_instances: automatic
   min_pending_latency: 100ms
   max_pending_latency: 200ms
+
+beta_settings:
+  cloud_sql_instances: judgeonline:asia-east2:judge-db
