@@ -1,7 +1,5 @@
-const { SocialLogin } = require('../models');
-
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+  const User = sequelize.define("User", {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
@@ -29,30 +27,35 @@ module.exports = (sequelize, DataTypes) => {
     isBanned: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-      field: 'is_banned',
+      field: "is_banned",
     },
     role: {
       type: DataTypes.ENUM(
-        'super_admin',
-        'judge_admin',
-        'forum_admin',
-        'user',
-        'premium_user'
+        "super_admin",
+        "judge_admin",
+        "forum_admin",
+        "user",
+        "premium_user"
       ),
-      defaultValue: 'user',
+      defaultValue: "user",
     },
     dateOfBirth: {
       type: DataTypes.DATE,
       defaultValue: null,
-      field: 'date_of_birth',
+      field: "date_of_birth",
     },
     point: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
   });
+
   User.associate = (models) => {
-    User.hasMany(models.SocialLogin, { foreignKey: 'userId' });
+    User.hasMany(models.SocialLogin, { foreignKey: "userId" });
+  };
+
+  User.associate = (models) => {
+    User.hasMany(models.Discuss, { foreignKey: "authorId" });
   };
 
   return User;

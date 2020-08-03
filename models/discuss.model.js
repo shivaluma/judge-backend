@@ -48,8 +48,8 @@ module.exports = (sequelize, DataTypes) => {
       field: "down_vote",
     },
   });
-  Discuss.associate = (model) => {
-    Discuss.belongsTo(model.User, { foreignKey: "authorId" });
+  Discuss.associate = (models) => {
+    Discuss.belongsTo(models.User, { foreignKey: "authorId" });
   };
   return Discuss;
 };
