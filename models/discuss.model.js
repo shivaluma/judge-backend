@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV1,
     },
     authorId: {
       type: DataTypes.UUID,
@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
+      field: "author_avatar",
     },
     content: {
       type: DataTypes.TEXT("long"),
@@ -50,6 +51,9 @@ module.exports = (sequelize, DataTypes) => {
   });
   Discuss.associate = (models) => {
     Discuss.belongsTo(models.User, { foreignKey: "authorId" });
+  };
+  Discuss.associate = (models) => {
+    Discuss.belongsToMany(models.Tag, { through: "Discuss_Tag" });
   };
   return Discuss;
 };
