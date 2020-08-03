@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV1,
     },
-    tagContent: {
+    content: {
       type: DataTypes.STRING,
       allowNull: false,
     },

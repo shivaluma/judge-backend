@@ -29,10 +29,8 @@ module.exports = (sequelize, DataTypes) => {
 
   DiscussVote.associate = (models) => {
     DiscussVote.belongsTo(models.User, { foreignKey: "userId" });
-  };
-
-  DiscussVote.associate = (models) => {
     DiscussVote.belongsTo(models.Discuss, { foreignKey: "discussId" });
   };
+
   return DiscussVote;
 };

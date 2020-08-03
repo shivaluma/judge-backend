@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     authorUsername: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
       field: "author_username",
     },
     authorAvatar: {
@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: null,
       field: "author_avatar",
     },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     content: {
       type: DataTypes.TEXT("long"),
       allowNull: false,
@@ -33,9 +37,8 @@ module.exports = (sequelize, DataTypes) => {
   });
   Discuss.associate = (models) => {
     Discuss.belongsTo(models.User, { foreignKey: "authorId" });
-  };
-  Discuss.associate = (models) => {
     Discuss.belongsToMany(models.Tag, { through: "Discuss_Tag" });
   };
+
   return Discuss;
 };
