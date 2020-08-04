@@ -1,7 +1,7 @@
-const sequelize = require("sequelize");
+const sequelize = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  const Tag = sequelize.define("Tag", {
+  const Tag = sequelize.define('Tag', {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Tag.associate = (models) => {
-    Tag.belongsToMany(models.Discuss, { through: "Discuss_Tag" });
+    Tag.belongsToMany(models.Discuss, { through: 'Discuss_Tag' });
   };
   return Tag;
 };

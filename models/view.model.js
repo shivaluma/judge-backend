@@ -1,14 +1,14 @@
-const sequelize = require("sequelize");
-const { UUID } = require("sequelize");
+const sequelize = require('sequelize');
+const { UUID } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  const View = sequelize.define("View", {
+  const View = sequelize.define('View', {
     discussId: {
       primaryKey: true,
       type: DataTypes.UUID,
       reference: {
-        model: "Discuss",
-        key: "id",
+        model: 'Discuss',
+        key: 'id',
       },
     },
     view: {
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   View.associate = (models) => {
-    View.belongsTo(models.Discuss, { foreignKey: "discussId" });
+    View.belongsTo(models.Discuss, { foreignKey: 'discussId' });
   };
 
   return View;

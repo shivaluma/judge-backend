@@ -1,22 +1,22 @@
-const bcrypt = require("bcrypt");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
-const keys = require("../configs/keys");
-const got = require("got");
+const bcrypt = require('bcrypt');
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const keys = require('../configs/keys');
+const got = require('got');
 
-const { User, SocialLogin } = require("../models");
-const { v4: uuidv4 } = require("uuid");
+const { User, SocialLogin } = require('../models');
+const { v4: uuidv4 } = require('uuid');
 
 exports.postSignUp = async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
   if (!username || !email || !password || !confirmPassword)
-    return res.status(400).json({ message: "Please input all fields." });
+    return res.status(400).json({ message: 'Please input all fields.' });
 
   if (!validator.isEmail(email))
-    return res.status(400).json({ message: "Not a valid email." });
+    return res.status(400).json({ message: 'Not a valid email.' });
 
   if (password !== confirmPassword)
-    return res.status(400).json({ message: "Password do not match." });
+    return res.status(400).json({ message: 'Password do not match.' });
   const hashedPassword = await bcrypt.hash(password, 12);
 
   try {
@@ -25,13 +25,13 @@ exports.postSignUp = async (req, res) => {
       password: hashedPassword,
       email,
     });
-    res.status(201).json({ message: "Create account successfully" });
+    res.status(201).json({ message: 'Create account successfully' });
   } catch (err) {
-    console.log(err.errors[0].path.split(".")[1]);
+    console.log(err.errors[0].path.split('.')[1]);
     return res.status(400).json({
-      message: "Cannot create account",
+      message: 'Cannot create account',
       duplicate: {
-        [err.errors[0].path.split(".")[1]]: true,
+        [err.errors[0].path.split('.')[1]]: true,
       },
     });
   }
@@ -40,22 +40,22 @@ exports.postSignUp = async (req, res) => {
 exports.postLogin = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password)
-    return res.status(400).json({ message: "Please input all fields." });
+    return res.status(400).json({ message: 'Please input all fields.' });
   try {
     const user = await User.findOne({
-      attributes: ["id", "username", "password", "avatar", "role"],
+      attributes: ['id', 'username', 'password', 'avatar', 'role'],
       where: {
         username: username,
       },
     });
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password." });
+      return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid)
-      return res.status(401).json({ message: "Invalid username or password." });
+      return res.status(401).json({ message: 'Invalid username or password.' });
     const payload = {
       id: user.id,
       username: user.username,
@@ -65,9 +65,9 @@ exports.postLogin = async (req, res) => {
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: "Login successfully.", accessToken, user: payload });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (err) {
-    return res.status(401).json({ message: "Invalid username or password." });
+    return res.status(401).json({ message: 'Invalid username or password.' });
   }
 };
 
@@ -84,7 +84,7 @@ exports.postGoogle = async (req, res) => {
       include: [
         {
           model: User,
-          attributes: ["id", "username", "email", "avatar", "role"],
+          attributes: ['id', 'username', 'email', 'avatar', 'role'],
         },
       ],
     });
@@ -93,18 +93,18 @@ exports.postGoogle = async (req, res) => {
       if (User.count({ email: response.email }) > 0)
         return res.status(409).json({
           message:
-            "There is an account with this email address, please login then bind to this google account.",
+            'There is an account with this email address, please login then bind to this google account.',
         });
 
       const verifyToken = uuidv4();
       SocialLogin.create({
         providerKey: response.sub,
-        providerType: "google",
+        providerType: 'google',
         verifyToken,
       });
 
       return res.status(302).json({
-        message: "No username found, please choose a username.",
+        message: 'No username found, please choose a username.',
         usernameToken: verifyToken,
         email: response.email,
       });
@@ -112,7 +112,7 @@ exports.postGoogle = async (req, res) => {
 
     if (!socialLoginUser.User) {
       return res.status(302).json({
-        message: "No username found, please choose a username.",
+        message: 'No username found, please choose a username.',
         verifyToken: socialLoginUser.verifyToken,
         email: response.email,
       });
@@ -128,7 +128,7 @@ exports.postGoogle = async (req, res) => {
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: "Login successfully.", accessToken, user: payload });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
     return res.status(500).json({ error });
   }
@@ -138,9 +138,9 @@ exports.getCheckUsernameValid = async (req, res) => {
   const { username } = req.query;
 
   if (!username)
-    return res.status(400).json({ message: "Not a valid username." });
+    return res.status(400).json({ message: 'Not a valid username.' });
   if (!validator.isAlphanumeric(username))
-    return res.status(400).json({ message: "Not a valid username." });
+    return res.status(400).json({ message: 'Not a valid username.' });
   const user = await User.findOne({
     where: {
       username,
@@ -150,18 +150,18 @@ exports.getCheckUsernameValid = async (req, res) => {
   if (user)
     return res.status(409).json({
       message:
-        "This username is already used by another user, please choose another username.",
+        'This username is already used by another user, please choose another username.',
     });
   return res.status(200).json({
-    message: "This username is valid.",
+    message: 'This username is valid.',
   });
 };
 
 exports.getCheckEmailValid = async (req, res) => {
   const { email } = req.query;
-  if (!email) return res.status(400).json({ message: "Not a valid email." });
+  if (!email) return res.status(400).json({ message: 'Not a valid email.' });
   if (!validator.isEmail(email))
-    return res.status(400).json({ message: "Not a valid email." });
+    return res.status(400).json({ message: 'Not a valid email.' });
   const user = await User.findOne({
     where: {
       email,
@@ -171,10 +171,10 @@ exports.getCheckEmailValid = async (req, res) => {
   if (user)
     return res.status(409).json({
       message:
-        "This email is already used by another user, please choose another email.",
+        'This email is already used by another user, please choose another email.',
     });
   return res.status(200).json({
-    message: "This email is valid.",
+    message: 'This email is valid.',
   });
 };
 
@@ -191,7 +191,7 @@ exports.postFacebook = async (req, res) => {
       include: [
         {
           model: User,
-          attributes: ["id", "username", "email", "avatar", "role"],
+          attributes: ['id', 'username', 'email', 'avatar', 'role'],
         },
       ],
     });
@@ -200,18 +200,18 @@ exports.postFacebook = async (req, res) => {
       if (User.count({ email: response.email }) > 0)
         return res.status(409).json({
           message:
-            "There is an account with this email address, please login then bind to this facebook account.",
+            'There is an account with this email address, please login then bind to this facebook account.',
         });
 
       const verifyToken = uuidv4();
       SocialLogin.create({
         providerKey: response.id,
-        providerType: "facebook",
+        providerType: 'facebook',
         verifyToken,
       });
 
       return res.status(302).json({
-        message: "No username found, please choose a username.",
+        message: 'No username found, please choose a username.',
         usernameToken: verifyToken,
         email: response.email,
       });
@@ -219,7 +219,7 @@ exports.postFacebook = async (req, res) => {
 
     if (!socialLoginUser.User) {
       return res.status(302).json({
-        message: "No username found, please choose a username.",
+        message: 'No username found, please choose a username.',
         verifyToken: socialLoginUser.verifyToken,
         email: response.email,
       });
@@ -235,7 +235,7 @@ exports.postFacebook = async (req, res) => {
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res
       .status(200)
-      .json({ message: "Login successfully.", accessToken, user: payload });
+      .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error });
@@ -253,14 +253,14 @@ exports.postUpdateUsername = async (req, res) => {
     });
 
     let urlAvatar = null;
-    if (userSocialLogin.providerType === "facebook") {
+    if (userSocialLogin.providerType === 'facebook') {
       urlAvatar = `https://graph.facebook.com/${userSocialLogin.providerKey}/picture?type=large`;
     }
 
     const user = await User.create({
       username,
       email,
-      password: "nopassword",
+      password: 'nopassword',
       avatar: urlAvatar,
     });
 
@@ -278,13 +278,13 @@ exports.postUpdateUsername = async (req, res) => {
 
     const accessToken = jwt.sign(payload, keys.secretOrKey);
     return res.status(200).json({
-      message: "Create account successfully.",
+      message: 'Create account successfully.',
       accessToken,
       user: payload,
     });
   } catch (err) {
     return res.status(400).json({
-      message: "Some error occurs, please contact the administrator for help.",
+      message: 'Some error occurs, please contact the administrator for help.',
     });
   }
 };

@@ -1,5 +1,5 @@
-const { Discuss, Tag } = require("../models");
-const { Op } = require("sequelize");
+const { Discuss, Tag } = require('../models');
+const { Op } = require('sequelize');
 
 exports.postDiscuss = async (req, res) => {
   const { title, content, tags } = req.body;
@@ -25,10 +25,10 @@ exports.postDiscuss = async (req, res) => {
       await discuss.addTag(newTag);
     });
 
-    res.status(201).json({ message: "Create discuss successfully" });
+    res.status(201).json({ message: 'Create discuss successfully' });
   } catch (err) {
     return res.status(400).json({
-      message: "Cannot create discuss",
+      message: 'Cannot create discuss',
     });
   }
 };
