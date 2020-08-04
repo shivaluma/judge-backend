@@ -1,11 +1,9 @@
-const { SocialLogin } = require('../models');
-
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV1,
     },
     username: {
       type: DataTypes.STRING,
@@ -51,8 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
     },
   });
+
   User.associate = (models) => {
     User.hasMany(models.SocialLogin, { foreignKey: 'userId' });
+    User.hasMany(models.Discuss, { foreignKey: 'authorId' });
   };
 
   return User;
