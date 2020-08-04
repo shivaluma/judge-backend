@@ -41,5 +41,4 @@ exports.getAllDiscuss = async (req, res) => {
     offset: 10 * (page - 1),
     limit: 10,
   });
-  console.log(rows);
 };
