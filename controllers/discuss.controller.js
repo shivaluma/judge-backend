@@ -7,7 +7,7 @@ exports.postDiscuss = async (req, res) => {
 
   try {
     let discuss = await Discuss.create({
-      authorId: user.id,
+      userId: user.id,
       authorUsername: user.username,
       authorAvatar: user.avatar,
       title: title,
@@ -15,7 +15,6 @@ exports.postDiscuss = async (req, res) => {
     });
 
     tags.forEach(async (tag) => {
-      console.log(tag);
       const [newTag] = await Tag.findOrCreate({
         where: { content: tag },
         defaults: { content: tag },
@@ -28,7 +27,7 @@ exports.postDiscuss = async (req, res) => {
       defaults: { discussId: discuss.id },
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'Create discuss successfully',
       data: { discussId: discuss.id },
     });
@@ -41,19 +40,40 @@ exports.postDiscuss = async (req, res) => {
 
 exports.getAllDiscuss = async (req, res) => {
   const { page } = req.query;
-
+  if (!page)
+    return res
+      .status(400)
+      .json({ message: 'Cannot get the page number, please try again.' });
   const { count, rows } = await Discuss.findAndCountAll({
-    include: [Tag, View, DiscussVote],
+    distinct: 'id',
+    attributes: [
+      'id',
+      'title',
+      'updatedAt',
+      'createdAt',
+      'authorUsername',
+      'authorAvatar',
+    ],
+    include: [
+      { model: Tag, attributes: ['content'] },
+      { model: View, attributes: ['view'] },
+    ],
     offset: 10 * (page - 1),
     limit: 10,
   });
-  res.status(200).json({ rows: rows, count: count });
+  res.status(200).json({ posts: rows, count: count });
 };
 
 exports.getDiscuss = async (req, res) => {
-  const discuss = await Discuss.findOne({
-    where: { id: discussId },
+  const { discussId } = req.params;
+  const discuss = await Discuss.findByPk(discussId, {
+    include: [
+      { model: Tag, attributes: ['content'] },
+      { model: View, attributes: ['view'] },
+    ],
   });
+
+  return res.status(200).json({ discuss: discuss });
 };
 
 exports.putDiscussView = async (req, res) => {
@@ -69,14 +89,13 @@ exports.putDiscussView = async (req, res) => {
 
 exports.postVote = async (req, res) => {
   const user = req.user;
-  const { discussId, vote } = req.body;
-  console.log(discussId);
-  console.log(user.id);
+  const { discussId, voteType } = req.body;
+
   try {
-    const vote = DiscussVote.create({
+    DiscussVote.create({
       discussId: discussId,
       userId: user.id,
-      typeVote: vote,
+      typeVote: voteType,
     });
     res.status(200).end();
   } catch (error) {

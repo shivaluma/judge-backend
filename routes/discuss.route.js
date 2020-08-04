@@ -10,7 +10,7 @@ router.post('/', authenticate, discussController.postDiscuss);
 
 router.get('/:discussId', discussController.getDiscuss);
 
-router.put('/:discussId', discussController.putDiscussView);
+router.put('/view/:discussId', discussController.putDiscussView);
 
 router.post('/:discussId/vote', authenticate, discussController.postVote);
 
