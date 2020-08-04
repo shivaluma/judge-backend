@@ -5,15 +5,20 @@ exports.postDiscuss = async (req, res) => {
   const { title, content, tag } = req.body;
   const user = req.user;
 
-  let discuss;
   try {
-    discuss = await Discuss.create({
+    let discuss = await Discuss.create({
       authorId: user.id,
       authorUsername: user.username,
       authorAvatar: user.avatar,
       title: title,
       content: content,
     });
+
+    tag.forEach(async (t) => {
+      const newtag = await Tag.create({ content: t });
+      await discuss.addTag(newtag);
+    });
+
     res.status(201).json({ message: "Create discuss successfully" });
   } catch (err) {
     return res.status(400).json({
@@ -21,18 +26,6 @@ exports.postDiscuss = async (req, res) => {
       duplicate: {
         [err.errors[0].path.split(".")[1]]: true,
       },
-    });
-  }
-  for (t of tag) {
-    const newtag = await Tag.create({ content: t });
-    console.log(newtag);
-    console.log(await discuss.addTag(t));
-  }
-  try {
-    res.status(201).json({ message: "Create tags successfully" });
-  } catch (err) {
-    return res.status(400).json({
-      message: "Cannot create tags",
     });
   }
 };

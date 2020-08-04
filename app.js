@@ -33,7 +33,7 @@ app.get("/api", (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3003;
-db.sequelize.sync({ force: false }).then(() => {
+db.sequelize.sync({ force: true }).then(() => {
   app.listen(PORT, () => {
     console.log("> Currently listen on port ", PORT);
   });
