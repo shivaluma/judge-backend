@@ -36,9 +36,10 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Discuss.associate = (models) => {
-    Discuss.belongsTo(models.User, { foreignKey: 'authorId' });
+    Discuss.belongsTo(models.User, { foreignKey: 'discuss_user' });
     Discuss.belongsToMany(models.Tag, { through: 'Discuss_Tag' });
-    Discuss.hasOne(models.View, { foreignKey: 'discussId' });
+    Discuss.hasOne(models.View, { foreignKey: 'view_discuss' });
+    Discuss.hasMany(models.DiscussVote, { foreignKey: 'discussVote_discuss' });
   };
 
   return Discuss;

@@ -51,8 +51,9 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
-    User.hasMany(models.SocialLogin, { foreignKey: 'userId' });
-    User.hasMany(models.Discuss, { foreignKey: 'authorId' });
+    User.hasMany(models.SocialLogin, { foreignKey: 'socialLogin_user' });
+    User.hasMany(models.Discuss, { foreignKey: 'discuss_user' });
+    User.hasMany(models.DiscussVote, { foreignKey: 'discussVote_user' });
   };
 
   return User;

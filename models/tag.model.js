@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     content: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
   });
   Tag.associate = (models) => {

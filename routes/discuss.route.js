@@ -8,4 +8,10 @@ router.get('/', discussController.getAllDiscuss);
 
 router.post('/', authenticate, discussController.postDiscuss);
 
+router.get('/:discussId', discussController.getDiscuss);
+
+router.put('/:discussId', discussController.putDiscussView);
+
+router.post('/:discussId/vote', authenticate, discussController.postVote);
+
 module.exports = router;

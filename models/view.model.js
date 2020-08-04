@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   View.associate = (models) => {
-    View.belongsTo(models.Discuss, { foreignKey: 'discussId' });
+    View.belongsTo(models.Discuss, { foreignKey: 'view_discuss' });
   };
 
   return View;

@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   SocialLogin.associate = (models) => {
-    SocialLogin.belongsTo(models.User, { foreignKey: 'userId' });
+    SocialLogin.belongsTo(models.User, { foreignKey: 'socialLogin_user' });
   };
   return SocialLogin;
 };
