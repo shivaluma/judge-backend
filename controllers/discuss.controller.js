@@ -45,7 +45,8 @@ exports.getAllDiscuss = async (req, res) => {
       .status(400)
       .json({ message: 'Cannot get the page number, please try again.' });
   const { count, rows } = await Discuss.findAndCountAll({
-    distinct: 'id',
+    distinct: true,
+    subQuery: false,
     attributes: [
       'id',
       'title',
@@ -54,29 +55,60 @@ exports.getAllDiscuss = async (req, res) => {
       'authorUsername',
       'authorAvatar',
       [
-        literal(`COUNT(CASE WHEN DiscussVotes.typeVote = 'up' THEN 1 END)`),
-        'up_vote',
+        literal(
+          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`
+        ),
+        'upVote',
+      ],
+      [
+        literal(
+          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`
+        ),
+        'downVote',
       ],
     ],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
-      { model: DiscussVote },
+      {
+        model: DiscussVote,
+        attributes: [],
+      },
     ],
     group: ['Discuss.id'],
-
     offset: 10 * (page - 1),
     limit: 10,
   });
-  res.status(200).json({ posts: rows, count: count });
+  res.status(200).json({ posts: rows, count: count.length });
 };
 
 exports.getDiscuss = async (req, res) => {
   const { discussId } = req.params;
   const discuss = await Discuss.findByPk(discussId, {
+    attributes: [
+      'title',
+      'content',
+      'createdAt',
+      'updatedAt',
+      'authorAvatar',
+      'authorUsername',
+      [
+        literal(
+          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`
+        ),
+        'upVote',
+      ],
+      [
+        literal(
+          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`
+        ),
+        'downVote',
+      ],
+    ],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
+      { model: DiscussVote, attributes: [] },
     ],
   });
 
