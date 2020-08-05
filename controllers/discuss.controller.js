@@ -1,5 +1,5 @@
 const { Discuss, Tag, View, DiscussVote } = require('../models');
-const { Op } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 
 exports.postDiscuss = async (req, res) => {
   const { title, content, tags } = req.body;
@@ -15,14 +15,14 @@ exports.postDiscuss = async (req, res) => {
     });
 
     tags.forEach(async (tag) => {
-      const [newTag] = await Tag.findOrCreate({
+      const [newTag] = await Tag.findCreateFind({
         where: { content: tag },
         defaults: { content: tag },
       });
       await discuss.addTag(newTag);
     });
 
-    await View.findOrCreate({
+    await View.findCreateFind({
       where: { discussId: discuss.id },
       defaults: { discussId: discuss.id },
     });
@@ -53,11 +53,18 @@ exports.getAllDiscuss = async (req, res) => {
       'createdAt',
       'authorUsername',
       'authorAvatar',
+      [
+        literal(`COUNT(CASE WHEN DiscussVotes.typeVote = 'up' THEN 1 END)`),
+        'up_vote',
+      ],
     ],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
+      { model: DiscussVote },
     ],
+    group: ['Discuss.id'],
+
     offset: 10 * (page - 1),
     limit: 10,
   });
@@ -89,16 +96,46 @@ exports.putDiscussView = async (req, res) => {
 
 exports.postVote = async (req, res) => {
   const user = req.user;
-  const { discussId, voteType } = req.body;
+  const { typeVote } = req.body;
+  const { discussId } = req.params;
 
   try {
-    DiscussVote.create({
-      discussId: discussId,
-      userId: user.id,
-      typeVote: voteType,
+    const [vote, isNew] = await DiscussVote.findCreateFind({
+      where: {
+        discussId: discussId,
+        userId: user.id,
+      },
+      defaults: {
+        discussId: discussId,
+        userId: user.id,
+        typeVote: typeVote,
+      },
     });
+
+    if (!isNew) {
+      vote.typeVote = typeVote;
+      await vote.save();
+    }
+
     res.status(200).end();
   } catch (error) {
     res.status(400).end();
   }
+};
+
+exports.getVote = async (req, res) => {
+  const user = req.user;
+  const { discussId } = req.params;
+  if (!discussId)
+    return res
+      .status(400)
+      .json({ message: 'Cannot get the discussId, please try again.' });
+
+  const vote = await DiscussVote.findOne({
+    where: {
+      discussId: discussId,
+      userId: user.id,
+    },
+  });
+  return res.status(200).json({ vote: vote });
 };

@@ -13,5 +13,5 @@ router.get('/:discussId', discussController.getDiscuss);
 router.put('/view/:discussId', discussController.putDiscussView);
 
 router.post('/:discussId/vote', authenticate, discussController.postVote);
-
+router.get('/:discussId/vote', authenticate, discussController.getVote);
 module.exports = router;

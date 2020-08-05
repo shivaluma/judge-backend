@@ -16,9 +16,13 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "password": "shiro",
+    "database": "judge",
+    "host": "34.96.168.29",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "socketPath": "/cloudsql/judgeonline:asia-east2:judge-db"
+    },
+    "operatorAliases": 0
   }
 }
