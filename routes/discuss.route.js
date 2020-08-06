@@ -10,8 +10,11 @@ router.post('/', authenticate, discussController.postDiscuss);
 
 router.get('/:discussId', discussController.getDiscuss);
 
-router.put('/view/:discussId', discussController.putDiscussView);
+router.put('/:discussId/view', discussController.putDiscussView);
 
 router.post('/:discussId/vote', authenticate, discussController.postVote);
 router.get('/:discussId/vote', authenticate, discussController.getVote);
+
+router.post('/:discussId/comment', authenticate, discussController.postComment);
+router.get('/:discussId/comment', discussController.getComment);
 module.exports = router;

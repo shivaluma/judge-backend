@@ -1,5 +1,6 @@
-const { Discuss, Tag, View, DiscussVote } = require('../models');
+const { Discuss, Tag, View, DiscussVote, Comment } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
+const { where } = require('sequelize');
 
 exports.postDiscuss = async (req, res) => {
   const { title, content, tags } = req.body;
@@ -55,15 +56,11 @@ exports.getAllDiscuss = async (req, res) => {
       'authorUsername',
       'authorAvatar',
       [
-        literal(
-          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`
-        ),
+        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`),
         'upVote',
       ],
       [
-        literal(
-          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`
-        ),
+        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`),
         'downVote',
       ],
     ],
@@ -75,7 +72,7 @@ exports.getAllDiscuss = async (req, res) => {
         attributes: [],
       },
     ],
-    group: ['Discuss.id'],
+    group: ['Discuss.id', 'Tags.id', 'View.id'],
     offset: 10 * (page - 1),
     limit: 10,
   });
@@ -93,15 +90,11 @@ exports.getDiscuss = async (req, res) => {
       'authorAvatar',
       'authorUsername',
       [
-        literal(
-          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`
-        ),
+        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`),
         'upVote',
       ],
       [
-        literal(
-          `COUNT(DISTINCT CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`
-        ),
+        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`),
         'downVote',
       ],
     ],
@@ -110,13 +103,14 @@ exports.getDiscuss = async (req, res) => {
       { model: View, attributes: ['view'] },
       { model: DiscussVote, attributes: [] },
     ],
+    group: ['Discuss.id', 'Tags.id', 'View.id'],
   });
 
   return res.status(200).json({ discuss: discuss });
 };
 
 exports.putDiscussView = async (req, res) => {
-  const { discussId } = req.body;
+  const { discussId } = req.params;
 
   const view = await View.findOne({
     where: { discussId: discussId },
@@ -170,4 +164,72 @@ exports.getVote = async (req, res) => {
     },
   });
   return res.status(200).json({ vote: vote });
+};
+
+exports.postComment = async (req, res) => {
+  const user = req.user;
+  const { discussId } = req.params;
+  const { content, parentId } = req.body;
+  if (!discussId)
+    return res
+      .status(400)
+      .json({ message: 'Cannot get the discussId, please try again.' });
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content cannot be empty.' });
+  }
+
+  try {
+    const comment = await Comment.create({
+      discussId,
+      content,
+      authorAvatar: user.avatar,
+      authorUsername: user.username,
+      parentId,
+    });
+    return res.status(201).json({ data: comment });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: 'There is an error on the server. Please try again.' });
+  }
+};
+
+exports.getComment = async (req, res) => {
+  const { discussId } = req.params;
+  const { page, parentId, sort } = req.query;
+
+  console.log(page, parentId, sort);
+  if (!discussId)
+    return res
+      .status(400)
+      .json({ message: 'Cannot get the discussId, please try again.' });
+
+  if (!page) {
+    return res.status(400).json({ message: 'No page chosen.' });
+  }
+
+  try {
+    const { count, rows } = await Comment.findAndCountAll({
+      where: {
+        discussId,
+        parentId: parentId === 'null' ? null : parentId,
+      },
+      offset: 10 * (page - 1),
+      limit: 10,
+      order: [
+        ['createdAt', sort], // Sorts by COLUMN_NAME_EXAMPLE in ascending order
+      ],
+    });
+    return res.status(201).json({
+      data: {
+        count: count,
+        comments: rows,
+      },
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: 'There is an error on the server. Please try again.' });
+  }
 };

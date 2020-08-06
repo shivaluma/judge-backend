@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     Discuss.belongsToMany(models.Tag, { through: 'Discuss_Tag' });
     Discuss.hasOne(models.View, { foreignKey: 'discussId' });
     Discuss.hasMany(models.DiscussVote, { foreignKey: 'discussId' });
+    Discuss.hasMany(models.Comment, { foreignKey: 'discussId' });
   };
 
   return Discuss;
