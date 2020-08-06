@@ -40,7 +40,23 @@ exports.postDiscuss = async (req, res) => {
 };
 
 exports.getAllDiscuss = async (req, res) => {
-  const { page } = req.query;
+  const { page, search, orderBy } = req.query;
+  let orderType = 'DESC';
+  let orderColumn = 'createdAt';
+  switch (orderBy) {
+    case 'newest_to_oldest':
+      orderType = 'DESC';
+      break;
+    case 'oldest_to_newest':
+      orderType = 'ASC';
+      break;
+    case 'most_vote':
+      orderColumn = literal('allVote');
+      break;
+    case 'recent_activity':
+      orderColumn = literal('activity');
+      break;
+  }
   if (!page)
     return res
       .status(400)
@@ -63,7 +79,25 @@ exports.getAllDiscuss = async (req, res) => {
         literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`),
         'downVote',
       ],
+      [
+        literal(
+          `COUNT(CASE WHEN DiscussVotes.type_vote = 'down' OR DiscussVotes.type_vote = 'up' THEN 1 END)`
+        ),
+        'allVote',
+      ],
+      [
+        literal(
+          `(SELECT MAX(updatedAt) FROM Comments WHERE discussId = Discuss.id)`
+        ),
+        'activity',
+      ],
     ],
+    where: {
+      title: {
+        [Op.like]: '%' + search + '%',
+      },
+    },
+    order: [[orderColumn, orderType]],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
