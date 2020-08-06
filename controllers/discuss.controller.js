@@ -40,7 +40,16 @@ exports.postDiscuss = async (req, res) => {
 };
 
 exports.getAllDiscuss = async (req, res) => {
-  const { page } = req.query;
+  const { page, search, orderBy } = req.query;
+  let order = 'DESC';
+  switch (orderBy) {
+    case 'newest_to_oldest':
+      order = 'DESC';
+      break;
+    case 'oldest_to_newest':
+      order = 'DESC';
+      break;
+  }
   if (!page)
     return res
       .status(400)
@@ -64,6 +73,12 @@ exports.getAllDiscuss = async (req, res) => {
         'downVote',
       ],
     ],
+    where: {
+      title: {
+        [Op.like]: '%' + search + '%',
+      },
+    },
+    order: [['updatedAt', order]],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
