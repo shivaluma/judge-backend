@@ -53,6 +53,9 @@ exports.getAllDiscuss = async (req, res) => {
     case 'most_vote':
       orderColumn = literal('allVote');
       break;
+    case 'recent_activity':
+      orderColumn = literal('activity');
+      break;
   }
   if (!page)
     return res
@@ -82,6 +85,12 @@ exports.getAllDiscuss = async (req, res) => {
         ),
         'allVote',
       ],
+      [
+        literal(
+          `(SELECT MAX(updatedAt) FROM Comments WHERE discussId = Discuss.id)`
+        ),
+        'activity',
+      ],
     ],
     where: {
       title: {
@@ -101,7 +110,6 @@ exports.getAllDiscuss = async (req, res) => {
     offset: 10 * (page - 1),
     limit: 10,
   });
-  console.log(rows);
   res.status(200).json({ posts: rows, count: count.length });
 };
 
