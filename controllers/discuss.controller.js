@@ -41,13 +41,17 @@ exports.postDiscuss = async (req, res) => {
 
 exports.getAllDiscuss = async (req, res) => {
   const { page, search, orderBy } = req.query;
-  let order = 'DESC';
+  let orderType = 'DESC';
+  let orderColumn = 'createdAt';
   switch (orderBy) {
     case 'newest_to_oldest':
-      order = 'DESC';
+      orderType = 'DESC';
       break;
     case 'oldest_to_newest':
-      order = 'DESC';
+      orderType = 'ASC';
+      break;
+    case 'most_vote':
+      orderColumn = literal('allVote');
       break;
   }
   if (!page)
@@ -72,13 +76,19 @@ exports.getAllDiscuss = async (req, res) => {
         literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`),
         'downVote',
       ],
+      [
+        literal(
+          `COUNT(CASE WHEN DiscussVotes.type_vote = 'down' OR DiscussVotes.type_vote = 'up' THEN 1 END)`
+        ),
+        'allVote',
+      ],
     ],
     where: {
       title: {
         [Op.like]: '%' + search + '%',
       },
     },
-    order: [['updatedAt', order]],
+    order: [[orderColumn, orderType]],
     include: [
       { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
@@ -91,6 +101,7 @@ exports.getAllDiscuss = async (req, res) => {
     offset: 10 * (page - 1),
     limit: 10,
   });
+  console.log(rows);
   res.status(200).json({ posts: rows, count: count.length });
 };
 
