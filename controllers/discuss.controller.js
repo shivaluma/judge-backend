@@ -211,10 +211,17 @@ exports.getComment = async (req, res) => {
 
   try {
     const { count, rows } = await Comment.findAndCountAll({
+      subQuery: false,
+
+      attributes: {
+        include: [[literal(`COUNT(childs.id)`), 'subComment']],
+      },
       where: {
         discussId,
         parentId: parentId === 'null' ? null : parentId,
       },
+      include: [{ model: Comment, as: 'childs', attributes: [] }],
+      group: ['Comment.id'],
       offset: 10 * (page - 1),
       limit: 10,
       order: [
@@ -223,11 +230,12 @@ exports.getComment = async (req, res) => {
     });
     return res.status(201).json({
       data: {
-        count: count,
+        count: count.length,
         comments: rows,
       },
     });
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json({ message: 'There is an error on the server. Please try again.' });
