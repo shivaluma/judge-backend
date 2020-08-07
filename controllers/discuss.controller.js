@@ -2,44 +2,7 @@ const { Discuss, Tag, View, DiscussVote, Comment } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 const { where } = require('sequelize');
 
-exports.postDiscuss = async (req, res) => {
-  const { title, content, tags } = req.body;
-  const user = req.user;
-
-  try {
-    let discuss = await Discuss.create({
-      userId: user.id,
-      authorUsername: user.username,
-      authorAvatar: user.avatar,
-      title: title,
-      content: content,
-    });
-
-    tags.forEach(async (tag) => {
-      const [newTag] = await Tag.findCreateFind({
-        where: { content: tag },
-        defaults: { content: tag },
-      });
-      await discuss.addTag(newTag);
-    });
-
-    await View.findCreateFind({
-      where: { discussId: discuss.id },
-      defaults: { discussId: discuss.id },
-    });
-
-    return res.status(201).json({
-      message: 'Create discuss successfully',
-      data: { discussId: discuss.id },
-    });
-  } catch (err) {
-    return res.status(400).json({
-      message: 'Cannot create discuss',
-    });
-  }
-};
-
-exports.getAllDiscuss = async (req, res) => {
+exports.getDiscusses = async (req, res) => {
   const { page, search, orderBy } = req.query;
   let orderType = 'DESC';
   let orderColumn = 'createdAt';
@@ -143,6 +106,83 @@ exports.getDiscuss = async (req, res) => {
   return res.status(200).json({ discuss: discuss });
 };
 
+exports.postDiscuss = async (req, res) => {
+  const { title, content, tags } = req.body;
+  const user = req.user;
+
+  try {
+    let discuss = await Discuss.create({
+      userId: user.id,
+      authorUsername: user.username,
+      authorAvatar: user.avatar,
+      title: title,
+      content: content,
+    });
+
+    tags.forEach(async (tag) => {
+      const [newTag] = await Tag.findCreateFind({
+        where: { content: tag },
+        defaults: { content: tag },
+      });
+      await discuss.addTag(newTag);
+    });
+
+    await View.findCreateFind({
+      where: { discussId: discuss.id },
+      defaults: { discussId: discuss.id },
+    });
+
+    return res.status(201).json({
+      message: 'Create discuss successfully',
+      data: { discussId: discuss.id },
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Cannot create discuss',
+    });
+  }
+};
+
+exports.updateDiscuss = async (req, res) => {
+  const { title, content, tags } = req.body;
+  const user = req.user;
+  const { discussId } = req.params;
+
+  const discuss = await Discuss.findByPk(discussId, {
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (discuss) {
+    discuss.title = title;
+    discuss.tags = tags;
+    discuss.content = content;
+    await discuss.save();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find disucss!' });
+  }
+};
+
+exports.deleteDiscuss = async (req, res) => {
+  const { discussId } = req.params;
+  const user = req.user;
+
+  const discuss = await Discuss.findByPk(discussId, {
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (discuss) {
+    await discuss.destroy();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find disucss!' });
+  }
+};
+
 exports.putDiscussView = async (req, res) => {
   const { discussId } = req.params;
 
@@ -223,6 +263,7 @@ exports.postComment = async (req, res) => {
     });
     return res.status(201).json({ data: comment });
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json({ message: 'There is an error on the server. Please try again.' });
@@ -273,5 +314,44 @@ exports.getComment = async (req, res) => {
     return res
       .status(500)
       .json({ message: 'There is an error on the server. Please try again.' });
+  }
+};
+
+exports.updateComment = async (req, res) => {
+  const { discussId, commentId } = req.params;
+  const user = req.user;
+  const { content } = req.body;
+
+  const comment = await Comment.findByPk(commentId, {
+    where: {
+      userId: user.id,
+      discussId: discussId,
+    },
+  });
+  if (comment) {
+    comment.content = content;
+    await comment.save();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find comment!' });
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  const { discussId, commentId } = req.params;
+  const user = req.user;
+
+  const comment = await Comment.findByPk(commentId, {
+    where: {
+      userId: user.id,
+      discussId: discussId,
+    },
+  });
+
+  if (comment) {
+    await comment.destroy();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find comment!' });
   }
 };

@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     { timestamps: false }
   );
   Tag.associate = (models) => {
-    Tag.belongsToMany(models.Discuss, { through: 'Discuss_Tag' });
+    Tag.belongsToMany(models.Discuss, {
+      onDelete: 'cascade',
+      through: 'Discuss_Tag',
+    });
   };
   return Tag;
 };

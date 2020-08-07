@@ -26,9 +26,20 @@ module.exports = (sequelize, DataTypes) => {
   });
   Comment.associate = (models) => {
     Comment.belongsTo(models.User, { foreignKey: 'userId' });
-    Comment.belongsTo(models.Discuss, { foreignKey: 'discussId' });
-    Comment.hasMany(models.Comment, { as: 'childs', foreignKey: 'parentId' });
-    Comment.belongsTo(models.Comment, { as: 'parent', foreignKey: 'parentId' });
+    Comment.belongsTo(models.Discuss, {
+      onDelete: 'cascade',
+      foreignKey: { name: 'discussId', allowNull: false },
+    });
+    Comment.hasMany(models.Comment, {
+      onDelete: 'cascade',
+      as: 'childs',
+      foreignKey: { name: 'parentId' },
+    });
+    Comment.belongsTo(models.Comment, {
+      onDelete: 'cascade',
+      as: 'parent',
+      foreignKey: { name: 'parentId' },
+    });
   };
 
   return Comment;
