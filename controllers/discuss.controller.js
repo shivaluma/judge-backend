@@ -232,7 +232,6 @@ exports.postComment = async (req, res) => {
 exports.getComment = async (req, res) => {
   const { discussId } = req.params;
   const { page, parentId, sort } = req.query;
-
   console.log(page, parentId, sort);
   if (!discussId)
     return res
@@ -244,6 +243,8 @@ exports.getComment = async (req, res) => {
   }
 
   try {
+    const commentPerPage = parentId !== 'null' ? 3 : 10;
+    console.log('commentPerPage : ', commentPerPage);
     const { count, rows } = await Comment.findAndCountAll({
       subQuery: false,
 
@@ -256,8 +257,8 @@ exports.getComment = async (req, res) => {
       },
       include: [{ model: Comment, as: 'childs', attributes: [] }],
       group: ['Comment.id'],
-      offset: 10 * (page - 1),
-      limit: 10,
+      offset: commentPerPage * (page - 1),
+      limit: commentPerPage,
       order: [
         ['createdAt', sort], // Sorts by COLUMN_NAME_EXAMPLE in ascending order
       ],
@@ -269,7 +270,6 @@ exports.getComment = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
     return res
       .status(500)
       .json({ message: 'There is an error on the server. Please try again.' });

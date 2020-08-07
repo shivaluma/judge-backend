@@ -2,8 +2,8 @@
   "development": {
     "username": "root",
     "password": "shiro",
-    "database": "online_judge",
-    "host": "127.0.0.1",
+    "database": "judge",
+    "host": "34.96.168.29",
     "dialect": "mysql",
     "operatorAliases": 0
   },
