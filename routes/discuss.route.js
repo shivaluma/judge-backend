@@ -24,8 +24,14 @@ router.post('/:discussId/comment', authenticate, discussController.postComment);
 
 router.get('/:discussId/comment', discussController.getComment);
 
+router.put(
+  '/:discussId/comment/:commentId',
+  authenticate,
+  discussController.updateComment
+);
+
 router.delete(
-  '/:discussId/comment',
+  '/:discussId/comment/:commentId',
   authenticate,
   discussController.deleteComment
 );

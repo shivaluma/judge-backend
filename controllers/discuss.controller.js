@@ -317,4 +317,41 @@ exports.getComment = async (req, res) => {
   }
 };
 
-exports.deleteComment = async (req, res) => {};
+exports.updateComment = async (req, res) => {
+  const { discussId, commentId } = req.params;
+  const user = req.user;
+  const { content } = req.body;
+
+  const comment = await Comment.findByPk(commentId, {
+    where: {
+      userId: user.id,
+      discussId: discussId,
+    },
+  });
+  if (comment) {
+    comment.content = content;
+    await comment.save();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find comment!' });
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  const { discussId, commentId } = req.params;
+  const user = req.user;
+
+  const comment = await Comment.findByPk(commentId, {
+    where: {
+      userId: user.id,
+      discussId: discussId,
+    },
+  });
+
+  if (comment) {
+    await comment.destroy();
+    return res.status(200).end();
+  } else {
+    return res.status(404).json({ message: 'Cannot find comment!' });
+  }
+};
