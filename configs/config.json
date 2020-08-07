@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "shiro",
+    "password": "admin",
     "database": "online_judge",
     "host": "127.0.0.1",
     "dialect": "mysql",

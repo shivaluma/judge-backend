@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   DiscussVote.associate = (models) => {
     DiscussVote.belongsTo(models.User, { foreignKey: 'userId' });
     DiscussVote.belongsTo(models.Discuss, {
-      foreignKey: 'discussId',
+      onDelete: 'cascade',
+      foreignKey: { name: 'discussId', allowNull: false },
     });
   };
 
