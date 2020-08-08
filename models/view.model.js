@@ -3,14 +3,6 @@ const { UUID } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   const View = sequelize.define('View', {
-    discussId: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      reference: {
-        model: 'Discuss',
-        key: 'id',
-      },
-    },
     view: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -19,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   View.associate = (models) => {
-    View.belongsTo(models.Discuss, { foreignKey: 'discussId' });
+    View.belongsTo(models.Discuss, {
+      onDelete: 'cascade',
+      foreignKey: { name: 'discussId', allowNull: false },
+    });
   };
 
   return View;

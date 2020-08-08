@@ -5,15 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV1,
     },
-    authorId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      field: 'author_id',
-      reference: {
-        model: 'User',
-        key: 'id',
-      },
-    },
+
     authorUsername: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,9 +28,20 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Discuss.associate = (models) => {
-    Discuss.belongsTo(models.User, { foreignKey: 'authorId' });
+    Discuss.belongsTo(models.User, { foreignKey: 'userId' });
     Discuss.belongsToMany(models.Tag, { through: 'Discuss_Tag' });
-    Discuss.hasOne(models.View, { foreignKey: 'discussId' });
+    Discuss.hasOne(models.View, {
+      onDelete: 'cascade',
+      foreignKey: 'discussId',
+    });
+    Discuss.hasMany(models.DiscussVote, {
+      onDelete: 'cascade',
+      foreignKey: 'discussId',
+    });
+    Discuss.hasMany(models.Comment, {
+      onDelete: 'cascade',
+      foreignKey: 'discussId',
+    });
   };
 
   return Discuss;

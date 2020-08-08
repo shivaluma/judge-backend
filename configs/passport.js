@@ -12,7 +12,7 @@ module.exports = (passport) => {
     new JwtStrategy(opts, (jwt_payload, done) => {
       console.log(jwt_payload);
       User.findOne({
-        attributes: ['id', 'username', 'password', 'avatar', 'role'],
+        attributes: ['id', 'username', 'avatar', 'role'],
         where: {
           id: jwt_payload.id,
         },

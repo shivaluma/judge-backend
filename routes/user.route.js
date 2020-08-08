@@ -14,4 +14,6 @@ router.get('/me', authenticate, userController.getMe);
 // return full user profile
 router.get('/profile', (req, res) => {});
 
+router.get('/find', userController.getUser);
+
 module.exports = router;
