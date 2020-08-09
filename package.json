@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "LOG_LEVEL=debug nodemon app.js | ./node_modules/.bin/pino-pretty",
     "start": "node app.js"
   },
   "dependencies": {
@@ -10,18 +10,20 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-pino-logger": "^5.0.0",
     "got": "^11.3.0",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.5.8",
     "mysql2": "^2.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
+    "pino": "^6.5.0",
     "sequelize": "^6.3.3",
     "uuid": "^8.1.0",
     "validator": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
+    "pino-pretty": "^4.1.0",
     "sequelize-cli": "^6.2.0"
   }
 }

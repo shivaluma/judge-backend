@@ -1,6 +1,14 @@
-const { Discuss, Tag, View, DiscussVote, Comment } = require('../models');
-const { Op, fn, col, literal } = require('sequelize');
-const { where } = require('sequelize');
+const {
+  Discuss,
+  Tag,
+  View,
+  DiscussVote,
+  Comment,
+  sequelize,
+  Discuss_Tag,
+} = require('../models');
+const { Op, literal, QueryTypes } = require('sequelize');
+const logger = require('../configs/logger').logger;
 
 exports.getDiscusses = async (req, res) => {
   const { page, search, orderBy } = req.query;
@@ -62,18 +70,22 @@ exports.getDiscusses = async (req, res) => {
     },
     order: [[orderColumn, orderType]],
     include: [
-      { model: Tag, attributes: ['content'] },
       { model: View, attributes: ['view'] },
       {
         model: DiscussVote,
         attributes: [],
       },
+      {
+        model: Tag,
+        attributes: ['content'],
+      },
     ],
-    group: ['Discuss.id', 'Tags.id', 'View.id'],
+    group: ['Discuss.id'],
     offset: 10 * (page - 1),
     limit: 10,
   });
-  res.status(200).json({ posts: rows, count: count.length });
+  logger.debug(rows, count);
+  return res.status(200).json({ posts: rows, count: count.length });
 };
 
 exports.getDiscuss = async (req, res) => {
@@ -96,7 +108,10 @@ exports.getDiscuss = async (req, res) => {
       ],
     ],
     include: [
-      { model: Tag, attributes: ['content'] },
+      {
+        model: Tag,
+        attributes: ['content'],
+      },
       { model: View, attributes: ['view'] },
       { model: DiscussVote, attributes: [] },
     ],
@@ -144,10 +159,9 @@ exports.postDiscuss = async (req, res) => {
 };
 
 exports.updateDiscuss = async (req, res) => {
-  const { title, content, tags } = req.body;
+  const { title, content, tags, previousTags } = req.body;
   const user = req.user;
   const { discussId } = req.params;
-
   const discuss = await Discuss.findByPk(discussId, {
     where: {
       userId: user.id,
@@ -156,8 +170,24 @@ exports.updateDiscuss = async (req, res) => {
 
   if (discuss) {
     discuss.title = title;
-    discuss.tags = tags;
     discuss.content = content;
+
+    previousTags
+      .filter((val) => !tags.includes(val))
+      .forEach(async (tag) => {
+        const toRemove = await Tag.findOne({
+          where: { content: tag },
+        });
+        await discuss.removeTag(toRemove);
+      });
+
+    tags.forEach(async (tag) => {
+      const [newTag] = await Tag.findCreateFind({
+        where: { content: tag },
+        defaults: { content: tag },
+      });
+      await discuss.addTag(newTag);
+    });
     await discuss.save();
     return res.status(200).end();
   } else {
@@ -263,7 +293,6 @@ exports.postComment = async (req, res) => {
     });
     return res.status(201).json({ data: comment });
   } catch (err) {
-    console.log(err);
     return res
       .status(500)
       .json({ message: 'There is an error on the server. Please try again.' });
@@ -273,7 +302,7 @@ exports.postComment = async (req, res) => {
 exports.getComment = async (req, res) => {
   const { discussId } = req.params;
   const { page, parentId, sort } = req.query;
-  console.log(page, parentId, sort);
+
   if (!discussId)
     return res
       .status(400)
@@ -285,7 +314,7 @@ exports.getComment = async (req, res) => {
 
   try {
     const commentPerPage = parentId !== 'null' ? 3 : 10;
-    console.log('commentPerPage : ', commentPerPage);
+
     const { count, rows } = await Comment.findAndCountAll({
       subQuery: false,
 
@@ -353,5 +382,38 @@ exports.deleteComment = async (req, res) => {
     return res.status(200).end();
   } else {
     return res.status(404).json({ message: 'Cannot find comment!' });
+  }
+};
+
+exports.getTags = async (req, res) => {
+  const { tag } = req.query;
+  try {
+    const t = await sequelize.transaction();
+    const records = await sequelize.query(
+      `select SQL_CALC_FOUND_ROWS t.*, count(dt.discussId) as count
+from Tags t
+left outer join Discuss_Tag dt
+on t.id = dt.TagId
+group by t.id
+order by count(dt.discussId) DESC
+limit 10;
+
+`,
+      {
+        type: QueryTypes.SELECT,
+        transaction: t,
+      }
+    );
+
+    const [count] = await sequelize.query(`SELECT FOUND_ROWS() as total;`, {
+      type: QueryTypes.SELECT,
+      transaction: t,
+    });
+
+    t.commit();
+    return res.status(200).json({ tags: records, total: count.total });
+  } catch (err) {
+    logger.error(err);
+    return res.status(400).json({ message: err });
   }
 };

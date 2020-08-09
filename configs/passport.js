@@ -10,7 +10,7 @@ opts.secretOrKey = keys.secretOrKey;
 module.exports = (passport) => {
   passport.use(
     new JwtStrategy(opts, (jwt_payload, done) => {
-      console.log(jwt_payload);
+
       User.findOne({
         attributes: ['id', 'username', 'avatar', 'role'],
         where: {
@@ -19,7 +19,7 @@ module.exports = (passport) => {
       })
         .then((user) => {
           if (user) {
-            console.log(user);
+
             return done(null, user);
           }
           return done(null, false, { message: 'Invalid token' });
