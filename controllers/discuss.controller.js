@@ -5,7 +5,6 @@ const {
   DiscussVote,
   Comment,
   sequelize,
-  Discuss_Tag,
 } = require('../models');
 const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
@@ -43,16 +42,20 @@ exports.getDiscusses = async (req, res) => {
       'authorUsername',
       'authorAvatar',
       [
-        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END)`),
+        literal(
+          `COUNT (DISTINCT (CASE WHEN DiscussVotes.type_vote = 'up' THEN 1 END))`
+        ),
         'upVote',
       ],
       [
-        literal(`COUNT(CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END)`),
+        literal(
+          `COUNT (DISTINCT (CASE WHEN DiscussVotes.type_vote = 'down' THEN 1 END))`
+        ),
         'downVote',
       ],
       [
         literal(
-          `COUNT(CASE WHEN DiscussVotes.type_vote = 'down' OR DiscussVotes.type_vote = 'up' THEN 1 END)`
+          `COUNT (DISTINCT(CASE WHEN DiscussVotes.type_vote = 'down' OR DiscussVotes.type_vote = 'up' THEN 1 END))`
         ),
         'allVote',
       ],
@@ -77,10 +80,14 @@ exports.getDiscusses = async (req, res) => {
       },
       {
         model: Tag,
+        where: {
+          content: ['java', 'oop', 'cdf', 'vsdv', 'faw'],
+        },
         attributes: ['content'],
       },
     ],
     group: ['Discuss.id'],
+    having: [{}, literal(`count(\`Tags->Discuss_Tag\`.\`TagId\`) >= 5`)],
     offset: 10 * (page - 1),
     limit: 10,
   });
@@ -387,6 +394,7 @@ exports.deleteComment = async (req, res) => {
 
 exports.getTags = async (req, res) => {
   const { tag } = req.query;
+  const tagQuery = tag || '';
   try {
     const t = await sequelize.transaction();
     const records = await sequelize.query(
@@ -394,6 +402,7 @@ exports.getTags = async (req, res) => {
 from Tags t
 left outer join Discuss_Tag dt
 on t.id = dt.TagId
+where t.content like '%${tagQuery}%'
 group by t.id
 order by count(dt.discussId) DESC
 limit 10;
