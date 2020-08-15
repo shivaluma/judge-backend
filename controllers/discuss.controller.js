@@ -10,9 +10,10 @@ const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
 
 exports.getDiscusses = async (req, res) => {
-  const { page, search, orderBy } = req.query;
+  const { page, search, orderBy, tag } = req.query;
   let orderType = 'DESC';
   let orderColumn = 'createdAt';
+
   switch (orderBy) {
     case 'newest_to_oldest':
       orderType = 'DESC';
@@ -34,6 +35,7 @@ exports.getDiscusses = async (req, res) => {
   const { count, rows } = await Discuss.findAndCountAll({
     distinct: true,
     subQuery: false,
+
     attributes: [
       'id',
       'title',
@@ -73,25 +75,35 @@ exports.getDiscusses = async (req, res) => {
     },
     order: [[orderColumn, orderType]],
     include: [
-      { model: View, attributes: ['view'] },
+      {
+        model: Tag,
+        where: {
+          content: Array.isArray(tag) ? tag : [tag],
+        },
+        required: false,
+        attributes: ['content'],
+      },
       {
         model: DiscussVote,
         attributes: [],
       },
-      {
-        model: Tag,
-        where: {
-          content: ['java', 'oop', 'cdf', 'vsdv', 'faw'],
-        },
-        attributes: ['content'],
-      },
+
+      { model: View, attributes: ['view'] },
     ],
     group: ['Discuss.id'],
-    having: [{}, literal(`count(\`Tags->Discuss_Tag\`.\`TagId\`) >= 5`)],
+
+    having: [
+      {},
+      literal(
+        `count(\`Tags->Discuss_Tag\`.\`TagId\`) >= ${
+          !Array.isArray(tag) ? (!tag ? 0 : 1) : tag.length
+        }`
+      ),
+    ],
     offset: 10 * (page - 1),
     limit: 10,
   });
-  logger.debug(rows, count);
+
   return res.status(200).json({ posts: rows, count: count.length });
 };
 
@@ -393,19 +405,30 @@ exports.deleteComment = async (req, res) => {
 };
 
 exports.getTags = async (req, res) => {
-  const { tag } = req.query;
+  const { tag, tags } = req.query;
   const tagQuery = tag || '';
+  const tagArray = Array.isArray(tags) ? tags : tags ? [tags] : [];
+  const tagString = tagArray.map((el) => `'${el}'`).join(',');
   try {
     const t = await sequelize.transaction();
     const records = await sequelize.query(
-      `select SQL_CALC_FOUND_ROWS t.*, count(dt.discussId) as count
+      `
+select SQL_CALC_FOUND_ROWS t.*, count(dt.discussId) as count
 from Tags t
 left outer join Discuss_Tag dt
-on t.id = dt.TagId
-where t.content like '%${tagQuery}%'
+on t.id = dt.TagId and dt.DiscussId in (select distinct dt.DiscussId
+from Discuss_Tag dt
+join Tags t on dt.TagId = t.id ${tags ? `and t.content in (${tagString})` : ''} 
+group by dt.DiscussId
+having count(dt.TagId) >= ${tagArray.length})
+where t.content like '%${tagQuery}%' ${
+        tags ? `and t.content not in (${tagString})` : ''
+      } 
 group by t.id
+having count(dt.discussId) > 0
 order by count(dt.discussId) DESC
 limit 10;
+
 
 `,
       {
