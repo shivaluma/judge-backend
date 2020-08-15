@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   Problem.associate = (models) => {
     Problem.belongsTo(models.User, { foreignKey: 'authorId' });
     Problem.hasMany(models.Discuss, { foreignKey: 'problemId' });
+    Problem.hasMany(models.Testcase, { foreignKey: 'problemId' });
   };
 
   return Problem;

@@ -1,12 +1,19 @@
-const { Problem, ProblemVote, sequelize } = require('../models');
+const { Problem, ProblemVote, Testcase, sequelize } = require('../models');
 const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
 
 exports.createProblem = async (req, res) => {
-  const { title, description, difficulty, hasSolution, isPremium } = req.body;
+  const {
+    title,
+    description,
+    difficulty,
+    hasSolution,
+    isPremium,
+    testcases,
+  } = req.body;
   const user = req.user;
   try {
-    let problem = await Problem.create({
+    const problem = await Problem.create({
       title: title,
       description: description,
       difficulty: difficulty,
@@ -14,6 +21,15 @@ exports.createProblem = async (req, res) => {
       isPremium: isPremium,
       authorId: user.id,
     });
+
+    testcases.forEach(async (testcase) => {
+      const newTestcase = await Testcase.create({
+        input: testcase.input,
+        output: testcase.output,
+        problemId: problem.id,
+      });
+    });
+
     return res.status(201).json({
       message: 'Create problem successfully',
       data: { problemId: problem.id },
