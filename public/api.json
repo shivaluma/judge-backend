@@ -15,6 +15,14 @@
   },
   "host": "judgeonline.df.r.appspot.com",
   "basePath": "/api",
+  "schemes": ["http", "https"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "tags": [
     {
       "name": "User",
@@ -44,7 +52,18 @@
             "required": true,
             "description": "Email of user."
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "email is valid"
+          },
+          "400": {
+            "description": "Invalid email supplied"
+          },
+          "409": {
+            "description": "email have exist."
+          }
+        }
       }
     },
     "/auth/check-username": {
@@ -61,7 +80,18 @@
             "required": true,
             "description": "Username of user."
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "username is valid"
+          },
+          "400": {
+            "description": "Invalid username supplied"
+          },
+          "409": {
+            "description": "username have exist."
+          }
+        }
       }
     },
     "/auth/signup": {
@@ -146,7 +176,21 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Login success"
+          },
+          "201": {
+            "description": "Login success"
+          },
+          "409": {
+            "description": "No username specified, user need to choose a username."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
       }
     },
     "/auth/facebook": {
@@ -179,13 +223,13 @@
     "/auth/update-username": {
       "post": {
         "tags": ["Authenticate"],
-        "summary": "Update user name",
+        "summary": "Update user name when login by google or facebook but account does not have a username",
         "operationId": "updateUsername",
         "parameters": [
           {
             "in": "body",
             "name": "username",
-            "description": "User enter username",
+            "description": "Update user name when login by google or facebook but account does not have a username",
             "required": true,
             "schema": {
               "type": "object",
@@ -208,6 +252,30 @@
         "responses": {
           "default": {
             "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get minimum info of user, for checking access token.",
+        "operationId": "getMe",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verified success",
+            "examples": {
+              "id": "userId",
+              "username": "username"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
