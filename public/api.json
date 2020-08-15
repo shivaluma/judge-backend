@@ -1,0 +1,266 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API for Online Judge System",
+    "version": "1.0.0",
+    "title": "BrosJudge API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "shivaluma@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "judgeonline.df.r.appspot.com",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "User",
+      "description": "Operations about user"
+    },
+    {
+      "name": "Authenticate",
+      "description": "Operations about authenticate"
+    },
+    {
+      "name": "Discuss",
+      "description": "Operations about discuss"
+    }
+  ],
+  "paths": {
+    "/auth/check-email": {
+      "get": {
+        "tags": ["Authenticate"],
+        "summary": "Check email",
+        "description": "User check email",
+        "operationId": "checkEmail",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "type": "string",
+            "required": true,
+            "description": "Email of user."
+          }
+        ]
+      }
+    },
+    "/auth/check-username": {
+      "get": {
+        "tags": ["Authenticate"],
+        "summary": "Check userame",
+        "description": "User check username",
+        "operationId": "checkUsername",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "type": "string",
+            "required": true,
+            "description": "Username of user."
+          }
+        ]
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Create user",
+        "description": "User create new account",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "Created user object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["username", "password", "confirmPassword", "email"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "confirmPassword": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Login into system",
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "description": "Enter username and password",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["username", "password"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Login into system with google account",
+        "operationId": "loginUserGoogle",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "AccessToken",
+            "description": "Enter google access token",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["ggAccessToken"],
+              "properties": {
+                "ggAccessToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/auth/facebook": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Login into system with facebook account",
+        "operationId": "loginUserFacebook",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "AccessToken",
+            "description": "Enter google access token",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["id", "fbAccessToken"],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "fbAccessToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/auth/update-username": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Update user name",
+        "operationId": "updateUsername",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "username",
+            "description": "User enter username",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["username"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/user/logout": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Logs out current logged in user session",
+        "operationId": "logoutUser",
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string",
+          "default": null
+        },
+        "isBan": {
+          "type": "boolean",
+          "default": false
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "super_admin",
+            "judge_admin",
+            "forum_admin",
+            "user",
+            "premium_user"
+          ]
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "point": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  }
+}

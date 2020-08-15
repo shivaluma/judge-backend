@@ -16,33 +16,52 @@ basePath: '/api'
 tags:
   - name: User
     description: Operations about user
+  - name: Authenticate
+    description: Operations about authenticate
 paths:
-  /user:
+  /auth/signup:
     post:
       tags:
-        - user
+        - Authenticate
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: User create new account
       operationId: createUser
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        description: Created user object
-        required: true
-  /auth/login:
-    post:
-      tags:
-        - user
-      summary: Login into system.
       parameters:
         - in: body
           name: user
-          description: The user to create.
+          description: Created user object
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+              - confirmPassword
+              - email
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              confirmPassword:
+                type: string
+              email:
+                type: string
+      responses:
+        default:
+          description: successful operation
+
+  /auth/login:
+    post:
+      tags:
+        - Authenticate
+      summary: Login into system
+      operationId: loginUser
+      parameters:
+        - in: body
+          name: user
+          description: Enter username and password
+          required: true
           schema:
             type: object
             required:
@@ -56,25 +75,9 @@ paths:
 
       responses:
         '200':
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/json:
-              schema:
-                type: string
-            application/xml:
-              schema:
-                type: string
+          description: successful login
+          schema:
+            $ref: '#/definitions/User'
         '400':
           description: Invalid username/password supplied
   /user/logout:
@@ -101,6 +104,7 @@ definitions:
         type: string
       avatar:
         type: string
+        default: null
       isBan:
         type: boolean
         default: false
@@ -117,5 +121,6 @@ definitions:
         format: date-time
       point:
         type: integer
+        default: 0
     xml:
       name: User
