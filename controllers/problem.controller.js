@@ -4,6 +4,25 @@ const logger = require('../configs/logger').logger;
 
 exports.createProblem = async (req, res) => {
   const { title, description, difficulty, hasSolution, isPremium } = req.body;
+  const user = req.user;
+  try {
+    let problem = await Problem.create({
+      title: title,
+      description: description,
+      difficulty: difficulty,
+      hasSolution: hasSolution,
+      isPremium: isPremium,
+      authorId: user.id,
+    });
+    return res.status(201).json({
+      message: 'Create problem successfully',
+      data: { problemId: problem.id },
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: 'Cannot create problem',
+    });
+  }
 };
 
 exports.getProblems = async (req, res) => {

@@ -5,4 +5,6 @@ const authenticate = passport.authenticate('jwt', { session: false });
 const problemController = require('../controllers/problem.controller');
 
 router.get('/', problemController.getProblems);
+router.post('/', authenticate, problemController.createProblem);
+
 module.exports = router;
