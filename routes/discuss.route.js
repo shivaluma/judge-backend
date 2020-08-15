@@ -8,6 +8,8 @@ router.get('/', discussController.getDiscusses);
 
 router.post('/', authenticate, discussController.postDiscuss);
 
+router.get('/tags', discussController.getTags);
+
 router.get('/:discussId', discussController.getDiscuss);
 
 router.put('/:discussId', authenticate, discussController.updateDiscuss);

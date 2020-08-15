@@ -27,7 +27,6 @@ exports.postSignUp = async (req, res) => {
     });
     res.status(201).json({ message: 'Create account successfully' });
   } catch (err) {
-    console.log(err.errors[0]);
     const env = process.env.NODE_ENV || 'development';
     return res.status(400).json({
       message: 'Cannot create account',
@@ -79,7 +78,7 @@ exports.postGoogle = async (req, res) => {
   try {
     const query = `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${ggAccessToken}`;
     const response = await got(`${query}`).json();
-    console.log(response);
+
     const socialLoginUser = await SocialLogin.findOne({
       where: {
         providerKey: response.sub,
@@ -240,14 +239,14 @@ exports.postFacebook = async (req, res) => {
       .status(200)
       .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
-    console.log(error);
+
     return res.status(500).json({ error });
   }
 };
 
 exports.postUpdateUsername = async (req, res) => {
   const { usernameToken, username, email } = req.body;
-  console.log(usernameToken, username, email);
+
   try {
     const userSocialLogin = await SocialLogin.findOne({
       where: {
@@ -267,7 +266,7 @@ exports.postUpdateUsername = async (req, res) => {
       avatar: urlAvatar,
     });
 
-    console.log(user);
+
 
     userSocialLogin.userId = user.id;
     await userSocialLogin.save();

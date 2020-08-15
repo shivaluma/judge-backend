@@ -5,6 +5,7 @@
     "database": "online_judge",
     "host": "127.0.0.1",
     "dialect": "mysql",
+
     "operatorAliases": 0
   },
   "test": {
@@ -23,6 +24,7 @@
     "dialectOptions": {
       "socketPath": "/cloudsql/judgeonline:asia-east2:judge-db"
     },
+    "logging": false,
     "operatorAliases": 0
   }
 }
