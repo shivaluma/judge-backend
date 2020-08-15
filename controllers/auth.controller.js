@@ -239,7 +239,6 @@ exports.postFacebook = async (req, res) => {
       .status(200)
       .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
-
     return res.status(500).json({ error });
   }
 };
@@ -265,8 +264,6 @@ exports.postUpdateUsername = async (req, res) => {
       password: 'nopassword',
       avatar: urlAvatar,
     });
-
-
 
     userSocialLogin.userId = user.id;
     await userSocialLogin.save();

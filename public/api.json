@@ -29,6 +29,13 @@
       "description": "Operations about discuss"
     }
   ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/auth/check-email": {
       "get": {
@@ -42,9 +49,14 @@
             "name": "email",
             "type": "string",
             "required": true,
-            "description": "Email of user."
+            "description": "Email."
           }
-        ]
+        ],
+        "responses": {
+          "400": {
+            "description": "Not a valid email."
+          }
+        }
       }
     },
     "/auth/check-username": {
@@ -61,7 +73,12 @@
             "required": true,
             "description": "Username of user."
           }
-        ]
+        ],
+        "responses": {
+          "400": {
+            "description": "Not a valid username."
+          }
+        }
       }
     },
     "/auth/signup": {
@@ -95,7 +112,15 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Create account successfully."
+          },
+          "400": {
+            "description": "Cannot create account."
+          }
+        }
       }
     },
     "/auth/login": {
@@ -122,7 +147,18 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successfully."
+          },
+          "400": {
+            "description": "Please input all fields."
+          },
+          "401": {
+            "description": "Invalid username or password."
+          }
+        }
       }
     },
     "/auth/google": {
@@ -146,7 +182,18 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successfully."
+          },
+          "302": {
+            "description": "No username found, please choose a username."
+          },
+          "409": {
+            "description": "There is an account with this email address, please login then bind to this google account."
+          }
+        }
       }
     },
     "/auth/facebook": {
@@ -173,7 +220,18 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successfully."
+          },
+          "302": {
+            "description": "No username found, please choose a username."
+          },
+          "409": {
+            "description": "There is an account with this email address, please login then bind to this facebook account."
+          }
+        }
       }
     },
     "/auth/update-username": {
@@ -197,7 +255,18 @@
               }
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successfully."
+          },
+          "302": {
+            "description": "No username found, please choose a username."
+          },
+          "409": {
+            "description": "There is an account with this email address, please login then bind to this facebook account."
+          }
+        }
       }
     },
     "/user/logout": {
@@ -208,6 +277,89 @@
         "responses": {
           "default": {
             "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/discuss": {
+      "get": {
+        "tags": ["Discuss"],
+        "summary": "Get discusses",
+        "description": "User get all discuss",
+        "operationId": "getDiscuss",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "type": "string",
+            "required": true,
+            "description": "Page number."
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "type": "string",
+            "required": false,
+            "description": "Search."
+          },
+          {
+            "in": "query",
+            "name": "orderBy",
+            "type": "string",
+            "required": false,
+            "description": "Order discusses."
+          },
+          {
+            "in": "query",
+            "name": "tag",
+            "type": "string",
+            "required": false,
+            "description": "Tag."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful get discusses"
+          },
+          "400": {
+            "description": "Cannot get the page number"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Discuss"],
+        "summary": "Post discuss",
+        "description": "User post discuss",
+        "operationId": "postDiscuss",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Discuss",
+            "description": "User create new discuss",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["title", "content", "tags"],
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful get discusses"
+          },
+          "400": {
+            "description": "Cannot get the page number"
           }
         }
       }
