@@ -25,7 +25,7 @@ app.use('/api', express.static(path.join(__dirname, 'public')));
 
 // Start server
 const PORT = process.env.PORT || 3003;
-db.sequelize.sync({ force: false }).then(() => {
+db.sequelize.sync({ force: true }).then(() => {
   app.listen(PORT, () => {
     logger.info('Server running on port %d', PORT);
   });

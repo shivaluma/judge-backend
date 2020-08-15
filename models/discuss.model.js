@@ -26,6 +26,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('long'),
       allowNull: false,
     },
+    ofProblem: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Problem',
+        key: 'id',
+      },
+      allowNull: true,
+    },
   });
   Discuss.associate = (models) => {
     Discuss.belongsTo(models.User, { foreignKey: 'userId' });
