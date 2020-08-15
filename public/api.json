@@ -15,6 +15,14 @@
   },
   "host": "judgeonline.df.r.appspot.com",
   "basePath": "/api",
+  "schemes": ["http", "https"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "tags": [
     {
       "name": "User",
@@ -29,13 +37,6 @@
       "description": "Operations about discuss"
     }
   ],
-  "securityDefinitions": {
-    "Bearer": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
-    }
-  },
   "paths": {
     "/auth/check-email": {
       "get": {
@@ -53,8 +54,14 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "email is valid"
+          },
           "400": {
-            "description": "Not a valid email."
+            "description": "Invalid email supplied"
+          },
+          "409": {
+            "description": "email have exist."
           }
         }
       }
@@ -75,8 +82,14 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "username is valid"
+          },
           "400": {
-            "description": "Not a valid username."
+            "description": "Invalid username supplied"
+          },
+          "409": {
+            "description": "username have exist."
           }
         }
       }
@@ -185,13 +198,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Login successfully."
+            "description": "Login success"
           },
-          "302": {
-            "description": "No username found, please choose a username."
+          "201": {
+            "description": "Login success"
           },
           "409": {
-            "description": "There is an account with this email address, please login then bind to this google account."
+            "description": "No username specified, user need to choose a username."
+          },
+          "500": {
+            "description": "Server error."
           }
         }
       }
@@ -237,13 +253,13 @@
     "/auth/update-username": {
       "post": {
         "tags": ["Authenticate"],
-        "summary": "Update user name",
+        "summary": "Update user name when login by google or facebook but account does not have a username",
         "operationId": "updateUsername",
         "parameters": [
           {
             "in": "body",
             "name": "username",
-            "description": "User enter username",
+            "description": "Update user name when login by google or facebook but account does not have a username",
             "required": true,
             "schema": {
               "type": "object",
@@ -271,7 +287,7 @@
     },
     "/user/logout": {
       "get": {
-        "tags": ["user"],
+        "tags": ["User"],
         "summary": "Logs out current logged in user session",
         "operationId": "logoutUser",
         "responses": {
@@ -281,12 +297,35 @@
         }
       }
     },
+    "/user/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get minimum info of user, for checking access token.",
+        "operationId": "getMe",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verified success",
+            "examples": {
+              "id": "userId",
+              "username": "username"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/discuss": {
       "get": {
         "tags": ["Discuss"],
-        "summary": "Get discusses",
-        "description": "User get all discuss",
-        "operationId": "getDiscuss",
+        "summary": "Get all discuss.",
+        "operationId": "getDiscusses",
         "parameters": [
           {
             "in": "query",
@@ -307,7 +346,7 @@
             "name": "orderBy",
             "type": "string",
             "required": false,
-            "description": "Order discusses."
+            "description": "Order."
           },
           {
             "in": "query",
@@ -319,23 +358,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful get discusses"
+            "description": "Get discusses successful."
           },
           "400": {
-            "description": "Cannot get the page number"
+            "description": "Cant not get discusses."
           }
         }
       },
       "post": {
         "tags": ["Discuss"],
-        "summary": "Post discuss",
-        "description": "User post discuss",
+        "summary": "Post discuss.",
         "operationId": "postDiscuss",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "body",
-            "name": "Discuss",
-            "description": "User create new discuss",
+            "name": "discuss",
+            "description": "Created discuss object",
             "required": true,
             "schema": {
               "type": "object",
@@ -348,7 +391,10 @@
                   "type": "string"
                 },
                 "tags": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -356,10 +402,175 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful get discusses"
+            "description": "Create discusses successful."
           },
           "400": {
-            "description": "Cannot get the page number"
+            "description": "Cannot create discuss."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}": {
+      "get": {
+        "tags": ["Discuss"],
+        "summary": "Get discuss.",
+        "operationId": "getDiscuss",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get discuss successful."
+          },
+          "400": {
+            "description": "Cant not get discuss."
+          }
+        }
+      },
+      "put": {
+        "tags": ["Discuss"],
+        "summary": "Update discuss.",
+        "operationId": "putDiscuss",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Discuss",
+            "description": "Update discuss object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["title", "content", "tags", "previousTags"],
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "tag": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "previousTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update discuss successful."
+          },
+          "400": {
+            "description": "Cant not update discuss."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Discuss"],
+        "summary": "Delete discuss.",
+        "operationId": "deleteDiscuss",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete discuss successful."
+          },
+          "400": {
+            "description": "Cant not delete discuss."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}/view": {
+      "put": {
+        "tags": ["Discuss"],
+        "summary": "Update discuss view.",
+        "operationId": "putDiscussView",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update discuss view successful."
+          },
+          "400": {
+            "description": "Cant not update view discuss."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}/vote": {
+      "post": {
+        "tags": ["Discuss"],
+        "summary": "Change discuss vote.",
+        "operationId": "postDiscussVote",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update discuss view successful."
+          },
+          "400": {
+            "description": "Cant not update view discuss."
           }
         }
       }
