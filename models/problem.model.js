@@ -24,23 +24,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'has_solution',
     },
 
     isPremium: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-    },
-
-    isPublic: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
+      field: 'is_premium',
     },
   });
 
   Problem.associate = (models) => {
     Problem.belongsTo(models.User, { foreignKey: 'authorId' });
+    Problem.hasMany(models.Discuss, { foreignKey: 'problemId' });
   };
 
   return Problem;
