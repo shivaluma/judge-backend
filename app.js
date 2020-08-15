@@ -2,6 +2,7 @@ const express = require('express');
 const compression = require('compression');
 const db = require('./models');
 const { logger } = require('./configs/logger');
+const path = require('path');
 const passport = require('passport');
 const cors = require('cors');
 const app = express();
@@ -19,9 +20,8 @@ app.use(passport.initialize());
 require('./configs/passport')(passport);
 
 app.use('/api', router);
-app.get('/api', (req, res) => {
-  res.send('BrosJudge Backend System');
-});
+
+app.use('/api', express.static(path.join(__dirname, 'public')));
 
 // Start server
 const PORT = process.env.PORT || 3003;

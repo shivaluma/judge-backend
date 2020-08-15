@@ -27,11 +27,13 @@ exports.postSignUp = async (req, res) => {
     });
     res.status(201).json({ message: 'Create account successfully' });
   } catch (err) {
-
+    const env = process.env.NODE_ENV || 'development';
     return res.status(400).json({
       message: 'Cannot create account',
       duplicate: {
-        [err.errors[0].path.split('.')[1]]: true,
+        [env == 'development'
+          ? err.errors[0].path.split('.')[1]
+          : err.errors[0].path]: true,
       },
     });
   }
