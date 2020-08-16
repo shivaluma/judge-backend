@@ -1,4 +1,10 @@
-const { Problem, ProblemVote, Testcase, sequelize } = require('../models');
+const {
+  Problem,
+  ProblemVote,
+  Testcase,
+  Submission,
+  sequelize,
+} = require('../models');
 const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
 
@@ -20,10 +26,11 @@ exports.createProblem = async (req, res) => {
       hasSolution: hasSolution,
       isPremium: isPremium,
       authorId: user.id,
+      authorUsername: user.username,
     });
 
     testcases.forEach(async (testcase) => {
-      const newTestcase = await Testcase.create({
+      await Testcase.create({
         input: testcase.input,
         output: testcase.output,
         problemId: problem.id,
@@ -32,11 +39,12 @@ exports.createProblem = async (req, res) => {
 
     return res.status(201).json({
       message: 'Create problem successfully',
-      data: { problemId: problem.id },
+      data: { problem: problem },
     });
   } catch (error) {
     return res.status(400).json({
       message: 'Cannot create problem',
+      error: error.message,
     });
   }
 };
@@ -66,29 +74,34 @@ exports.getProblems = async (req, res) => {
       'difficulty',
       'hasSolution',
       'is_premium',
+      'authorUsername',
       [
         literal(
-          `COUNT (DISTINCT (CASE WHEN Submissions.status = 'AC' THEN 1 END))`
+          `COUNT (DISTINCT(CASE WHEN Submissions.status = 'AC' THEN 1 END))`
         ),
-        'AC',
+        'AcceptCount',
       ],
       [
-        literal(
-          `COUNT (DISTINCT(CASE WHEN Submissions.status = 'AC' OR Submissions.status = 'WA' OR Submissions.status = 'RE' OR Submissions.status = 'TLE' THEN 1 END))`
-        ),
-        'allStatus',
+        literal(`COUNT (DISTINCT(CASE WHEN Submissions.id > 0 THEN 1 END))`),
+        'TotalCount',
       ],
+    ],
+
+    include: [
+      {
+        model: Submission,
+      },
     ],
     where: {
       difficulty: {
-        [Op.like]: '%' + difficulty + '%',
+        [Op.like]: difficulty + '%',
       },
       hasSolution: {
         [Op.or]: hasSolution === '' ? [true, false] : [solution],
       },
     },
-    offset: 10 * (page - 1),
-    limit: 10,
+    group: ['Problem.id'],
+    
   });
-  console.log(rows);
+  return res.status(200).json({ count: count.length, problems: rows });
 };

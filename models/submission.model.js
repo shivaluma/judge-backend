@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('AC', 'WA', 'RE', 'TLE'),
       allowNull: false,
     },
-
     runtime: {
       type: DataTypes.INTEGER,
       allowNull: false,
