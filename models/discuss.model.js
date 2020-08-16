@@ -42,6 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'cascade',
       foreignKey: 'discussId',
     });
+
+    Discuss.belongsTo(models.Problem, { foreignKey: 'problemId' });
   };
 
   return Discuss;
