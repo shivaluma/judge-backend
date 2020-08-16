@@ -76,13 +76,11 @@ exports.getProblems = async (req, res) => {
       'is_premium',
       'authorUsername',
       [
-        literal(
-          `COUNT (DISTINCT(CASE WHEN Submissions.status = 'AC' THEN 1 END))`
-        ),
+        literal(`COUNT (CASE WHEN Submissions.status = 'AC' THEN 1 END)`),
         'AcceptCount',
       ],
       [
-        literal(`COUNT (DISTINCT(CASE WHEN Submissions.id > 0 THEN 1 END))`),
+        literal(`COUNT (CASE WHEN Submissions.id > 0 THEN 1 END)`),
         'TotalCount',
       ],
     ],
@@ -90,6 +88,8 @@ exports.getProblems = async (req, res) => {
     include: [
       {
         model: Submission,
+        attributes: [],
+        required: false,
       },
     ],
     where: {
@@ -101,7 +101,12 @@ exports.getProblems = async (req, res) => {
       },
     },
     group: ['Problem.id'],
-    
   });
   return res.status(200).json({ count: count.length, problems: rows });
+};
+
+exports.getProblem = async (req, res) => {
+  const { problemId } = req.query;
+  const problem = await Problem.findByPk(problemId);
+  return res.status(200).json({ problem: problem });
 };
