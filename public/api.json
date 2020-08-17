@@ -297,6 +297,38 @@
         }
       }
     },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["Authenticate"],
+        "summary": "Forgot password",
+        "operationId": "postForgotPassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Email",
+            "description": "Email object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get password successfully."
+          },
+          "400": {
+            "description": "Can not get password."
+          }
+        }
+      }
+    },
     "/user/logout": {
       "get": {
         "tags": ["User"],
@@ -329,6 +361,49 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/user/change-password": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Change password",
+        "operationId": "postChangePassword",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Account",
+            "description": "Account object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["oldPassword", "newPassword", "confirmPassword"],
+              "properties": {
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                },
+                "confirmPassword": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Change password successfully."
+          },
+          "400": {
+            "description": "Can not change password."
           }
         }
       }
