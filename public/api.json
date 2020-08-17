@@ -47,6 +47,10 @@
     {
       "name": "Submission",
       "description": "Operations about submission"
+    },
+    {
+      "name": "Tag",
+      "description": "Operations about tag"
     }
   ],
   "paths": {
@@ -1175,6 +1179,242 @@
       },
       "xml": {
         "name": "User"
+      }
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "parentId": {
+          "type": "integer"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "discussId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "authorUsername": {
+          "type": "string"
+        },
+        "authorAvatar": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Comment"
+      }
+    },
+    "Discuss": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "problemId": {
+          "type": "integer"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "authorUsername": {
+          "type": "string"
+        },
+        "authorAvatar": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Discuss"
+      }
+    },
+    "DiscussVote": {
+      "type": "object",
+      "properties": {
+        "discussId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "typeVote": {
+          "type": "string",
+          "enum": ["up", "down"]
+        }
+      },
+      "xml": {
+        "name": "DiscussVote"
+      }
+    },
+    "Problem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard"]
+        },
+        "hasSolution": {
+          "type": "boolean"
+        },
+        "isPremium": {
+          "type": "boolean"
+        },
+        "authorId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "authorUsername": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Problem"
+      }
+    },
+    "ProblemVote": {
+      "type": "object",
+      "properties": {
+        "problemId": {
+          "type": "integer"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "typeVote": {
+          "type": "string",
+          "enum": ["up", "down"]
+        }
+      },
+      "xml": {
+        "name": "ProblemVote"
+      }
+    },
+    "SocialLogin": {
+      "type": "object",
+      "properties": {
+        "providerKey": {
+          "type": "string"
+        },
+        "providerType": {
+          "type": "string",
+          "enum": ["google", "facebook", "github"]
+        },
+        "verifyToken": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "xml": {
+        "name": "SocialLogin"
+      }
+    },
+    "Submission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["AC", "WA", "RE", "TLE"]
+        },
+        "runtime": {
+          "type": "integer"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["cpp", "c"]
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "problemId": {
+          "type": "integer"
+        }
+      },
+      "xml": {
+        "name": "Submission"
+      }
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Tag"
+      }
+    },
+    "Testcase": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "problemId": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Testcase"
+      }
+    },
+    "View": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "integer"
+        },
+        "discussId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "xml": {
+        "name": "View"
       }
     }
   }
