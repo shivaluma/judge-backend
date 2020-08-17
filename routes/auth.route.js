@@ -14,4 +14,6 @@ router.post('/facebook', authController.postFacebook);
 
 router.post('/update-username', authController.postUpdateUsername);
 
+router.post('/forgot-password', authController.postForgotPassword);
+
 module.exports = router;
