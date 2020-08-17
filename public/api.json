@@ -661,8 +661,8 @@
       },
       "get": {
         "tags": ["Discuss"],
-        "summary": "Get discuss vote.",
-        "operationId": "getDiscussVote",
+        "summary": "Get discuss comment.",
+        "operationId": "getDiscussComment",
         "security": [
           {
             "Bearer": []
@@ -674,14 +674,112 @@
             "name": "discussId",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "parentId",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "type": "string",
+            "required": false
           }
         ],
         "responses": {
           "200": {
-            "description": "Get discuss vote successful."
+            "description": "Get discuss comment successful."
           },
           "400": {
-            "description": "Cant not get discuss vote."
+            "description": "Cant not get discuss comment."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}/comment/{commentId}": {
+      "put": {
+        "tags": ["Discuss"],
+        "summary": "Update discuss comment.",
+        "operationId": "putDiscussCommet",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Vote",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["content"],
+              "properties": {
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update discuss comment successful."
+          },
+          "400": {
+            "description": "Cant not update discuss comment."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Discuss"],
+        "summary": "Delete discuss comment.",
+        "operationId": "deleteDiscussComment",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get discuss comment successful."
+          },
+          "400": {
+            "description": "Cant not get discuss comment."
           }
         }
       }
@@ -754,6 +852,48 @@
           },
           "400": {
             "description": "Cant create problem discuss."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Problem"],
+        "summary": "Get problem.",
+        "operationId": "getProblem",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "problemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get problem successful."
+          },
+          "400": {
+            "description": "Cant get problem discuss."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Problem"],
+        "summary": "Delete problem.",
+        "operationId": "deleteProblem",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "problemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete problem successful."
+          },
+          "400": {
+            "description": "Cant delete problem discuss."
           }
         }
       }
