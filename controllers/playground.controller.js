@@ -1,17 +1,25 @@
 const got = require('got');
 
 exports.postRunCode = async (req, res) => {
-  const { source_code, language_id } = req.body;
+  const { src, stdin, lang } = req.body;
   try {
-    const response = await got
-      .post('http://34.92.72.85/submissions/?base64_encoded=true&wait=true', {
-        json: {
-          source_code,
-          language_id,
-        },
-      })
-      .json();
-    return res.status(200).json({ response });
+    const response = await got.post('http://35.220.245.247/submit', {
+      json: {
+        src: new Buffer(src).toString('base64'),
+        stdin: stdin,
+        expected_result: '',
+        lang: lang,
+        timeout: 2,
+        isBase64: true,
+      },
+    });
+    const currentInterval = setInterval(async () => {
+      const result = await got.get(response.body).json();
+      if (result.status !== 'Queued' && result.status !== 'Processing') {
+        clearTimeout(currentInterval);
+        return res.status(201).json(result);
+      }
+    }, 400);
   } catch (err) {
     return res.status(400).json({
       message: 'Some error occured, please contact the administrator.',

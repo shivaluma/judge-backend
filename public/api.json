@@ -15,7 +15,7 @@
   },
   "host": "judgeonline.df.r.appspot.com",
   "basePath": "/api",
-  "schemes": ["http", "https"],
+  "schemes": ["https"],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
