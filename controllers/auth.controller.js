@@ -283,3 +283,82 @@ exports.postUpdateUsername = async (req, res) => {
     });
   }
 };
+
+exports.postForgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Please input email!' });
+
+  const tempPassword = randomstring.generate({ length: 6 });
+  try {
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) return res.status(404).json({ message: 'Email not exsist!' });
+    else {
+      const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'tan.thai.2t@gmail.com',
+          pass: 'Doublet5299',
+        },
+      });
+
+      const mainOptions = {
+        from: 'Crepp',
+        to: email,
+        subject: 'BrosCode Password Reset Verification',
+        text: 'Forgot password',
+        html: `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100% !important;">
+          <tr><td align="center">
+        <table style="; border:1px solid #eaeaea;border-radius:5px;margin:40px 0;" width="600" border="0" cellspacing="0" cellpadding="40">
+          <tr><td align="center"><div style="font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, sans-serif;text-align:left;width:465px;">
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100% !important;">
+          <tr><td align="center">
+          <div><img src="https://assets.vercel.com/email/vercel.png" width="40" height="37" alt="Vercel" /></div>
+          <h1 style="color:#000;font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, sans-serif;font-size:24px;font-weight:normal;margin:30px 0;padding:0;">Reset password from<b>BrosCode</b></h1>
+        </td></tr>
+        </table>
+        
+        <p style="color:#000;font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, sans-serif;font-size:14px;line-height:24px;">Hello <b> ${User.username}</b>,</p>
+        <p style="color:#000;font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, sans-serif;font-size:14px;line-height:24px;">This is your new password!</p>
+        <br/>
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100% !important;">
+          <tr>
+            <td align="center" bgcolor="#f6f6f6" valign="middle" height="40" style="font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, sans-serif;font-size:16px;font-weight:bold;">${tempPassword}</td>
+          </tr>
+        </table>
+        
+        
+        
+        
+        
+        
+        <hr style="border:none;border-top:1px solid #eaeaea;margin:26px 0;width:100%;"></hr>
+        </div></td></tr>
+        </table>
+        </td></tr>
+        </table>`,
+      };
+      transporter.sendMail(mainOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Sent:' + info.response);
+        }
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    user.password = hashedPassword;
+    res.status(201).json({ message: 'Reset password successfully' });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Some error occurs, please contact the administrator for help.',
+    });
+  }
+};

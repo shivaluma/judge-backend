@@ -16,4 +16,6 @@ router.get('/profile', (req, res) => {});
 
 router.get('/find', userController.getUser);
 
+router.post('/forgot-password', authController.postForgotPassword);
+
 module.exports = router;
