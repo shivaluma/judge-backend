@@ -39,6 +39,14 @@
     {
       "name": "Problem",
       "description": "Operations about problem"
+    },
+    {
+      "name": "Code",
+      "description": "Operations about code"
+    },
+    {
+      "name": "Submission",
+      "description": "Operations about submission"
     }
   ],
   "paths": {
@@ -661,8 +669,8 @@
       },
       "get": {
         "tags": ["Discuss"],
-        "summary": "Get discuss vote.",
-        "operationId": "getDiscussVote",
+        "summary": "Get discuss comment.",
+        "operationId": "getDiscussComment",
         "security": [
           {
             "Bearer": []
@@ -674,14 +682,112 @@
             "name": "discussId",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "parentId",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "type": "string",
+            "required": false
           }
         ],
         "responses": {
           "200": {
-            "description": "Get discuss vote successful."
+            "description": "Get discuss comment successful."
           },
           "400": {
-            "description": "Cant not get discuss vote."
+            "description": "Cant not get discuss comment."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}/comment/{commentId}": {
+      "put": {
+        "tags": ["Discuss"],
+        "summary": "Update discuss comment.",
+        "operationId": "putDiscussCommet",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Vote",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["content"],
+              "properties": {
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update discuss comment successful."
+          },
+          "400": {
+            "description": "Cant not update discuss comment."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Discuss"],
+        "summary": "Delete discuss comment.",
+        "operationId": "deleteDiscussComment",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get discuss comment successful."
+          },
+          "400": {
+            "description": "Cant not get discuss comment."
           }
         }
       }
@@ -754,6 +860,194 @@
           },
           "400": {
             "description": "Cant create problem discuss."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Problem"],
+        "summary": "Get problem.",
+        "operationId": "getProblem",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "problemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get problem successful."
+          },
+          "400": {
+            "description": "Cant get problem discuss."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Problem"],
+        "summary": "Delete problem.",
+        "operationId": "deleteProblem",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "problemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete problem successful."
+          },
+          "400": {
+            "description": "Cant delete problem discuss."
+          }
+        }
+      }
+    },
+    "/problem/list/": {
+      "get": {
+        "tags": ["Problem"],
+        "summary": "Get problems.",
+        "operationId": "getProblems",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "difficulty",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "hasSolution",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "searchQuery",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get problems successful."
+          },
+          "400": {
+            "description": "Cant get problems discuss."
+          }
+        }
+      }
+    },
+    "/code/run/": {
+      "post": {
+        "tags": ["Code"],
+        "summary": "Run code.",
+        "operationId": "postRunCode",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "code",
+            "description": "code object",
+            "schema": {
+              "required": ["source_code", "language_id"],
+              "properties": {
+                "source_code": {
+                  "type": "string"
+                },
+                "language_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run code successful."
+          },
+          "400": {
+            "description": "Cant run code discuss."
+          }
+        }
+      }
+    },
+    "/submission/": {
+      "post": {
+        "tags": ["Submission"],
+        "summary": "Post submission.",
+        "operationId": "postSubmission",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "submission",
+            "description": "submission object",
+            "schema": {
+              "required": ["code", "problemId", "language"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "problemId": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post submission successful."
+          },
+          "400": {
+            "description": "Cant post submission discuss."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Submission"],
+        "summary": "Get submission.",
+        "operationId": "getSubmission",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "problemId",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get submission successful."
+          },
+          "400": {
+            "description": "Cant get submission discuss."
           }
         }
       }
