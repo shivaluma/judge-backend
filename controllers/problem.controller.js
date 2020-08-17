@@ -50,7 +50,7 @@ exports.createProblem = async (req, res) => {
 };
 
 exports.getProblems = async (req, res) => {
-  const { difficulty, hasSolution, page } = req.query;
+  const { difficulty, hasSolution, page, searchQuery } = req.query;
   let solution = '';
   if (hasSolution == 'true') {
     solution = true;
@@ -98,6 +98,9 @@ exports.getProblems = async (req, res) => {
       },
       hasSolution: {
         [Op.or]: hasSolution === '' ? [true, false] : [solution],
+      },
+      title: {
+        [Op.like]: '%' + searchQuery + '%',
       },
     },
     group: ['Problem.id'],
