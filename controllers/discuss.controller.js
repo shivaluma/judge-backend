@@ -10,9 +10,11 @@ const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
 
 exports.getDiscusses = async (req, res) => {
-  const { page, search, orderBy, tag } = req.query;
+  const { page, search, orderBy, tag, problem } = req.query;
+
   let orderType = 'DESC';
   let orderColumn = 'createdAt';
+  let problemId = !problem ? null : problem;
 
   switch (orderBy) {
     case 'newest_to_oldest':
@@ -72,6 +74,7 @@ exports.getDiscusses = async (req, res) => {
       title: {
         [Op.like]: '%' + search + '%',
       },
+      problemId: problemId,
     },
     order: [[orderColumn, orderType]],
     include: [
@@ -141,7 +144,7 @@ exports.getDiscuss = async (req, res) => {
 };
 
 exports.postDiscuss = async (req, res) => {
-  const { title, content, tags } = req.body;
+  const { title, content, tags, problemId } = req.body;
   const user = req.user;
 
   try {
@@ -151,6 +154,7 @@ exports.postDiscuss = async (req, res) => {
       authorAvatar: user.avatar,
       title: title,
       content: content,
+      problemId: !problemId ? null : problemId,
     });
 
     tags.forEach(async (tag) => {
@@ -405,10 +409,11 @@ exports.deleteComment = async (req, res) => {
 };
 
 exports.getTags = async (req, res) => {
-  const { tag, tags } = req.query;
+  const { tag, tags, problem } = req.query;
   const tagQuery = tag || '';
   const tagArray = Array.isArray(tags) ? tags : tags ? [tags] : [];
   const tagString = tagArray.map((el) => `'${el}'`).join(',');
+  const problemId = !problem ? null : Number(problem);
   try {
     const t = await sequelize.transaction();
     const records = await sequelize.query(
@@ -416,6 +421,9 @@ exports.getTags = async (req, res) => {
 select SQL_CALC_FOUND_ROWS t.*, count(dt.discussId) as count
 from Tags t
 left outer join Discuss_Tag dt
+join Discusses d on dt.discussId = d.id and d.problemId ${
+        problemId === null ? 'IS NULL ' : '= :problemId'
+      }
 on t.id = dt.TagId and dt.DiscussId in (select distinct dt.DiscussId
 from Discuss_Tag dt
 join Tags t on dt.TagId = t.id ${tags ? `and t.content in (${tagString})` : ''} 
@@ -434,6 +442,7 @@ limit 10;
       {
         type: QueryTypes.SELECT,
         transaction: t,
+        replacements: { problemId: problemId },
       }
     );
 
