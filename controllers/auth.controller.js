@@ -69,6 +69,46 @@ exports.postLogin = async (req, res) => {
   }
 };
 
+exports.postLoginAdmin = async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password)
+    return res.status(400).json({ message: 'Please input all fields.' });
+  try {
+    const user = await User.findOne({
+      attributes: ['id', 'username', 'password', 'avatar', 'role'],
+      where: {
+        username: username,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    if (user.role !== 'super_admin' && user.role !== 'judge_admin') {
+      return res
+        .status(403)
+        .json({ message: 'You dont have permission to access to this page.' });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid)
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    const payload = {
+      id: user.id,
+      username: user.username,
+      avatar: user.avatar,
+      role: user.role,
+    };
+    const accessToken = jwt.sign(payload, keys.secretOrKey);
+    return res
+      .status(200)
+      .json({ message: 'Login successfully.', accessToken, user: payload });
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid username or password.' });
+  }
+};
+
 exports.postGoogle = async (req, res) => {
   const { ggAccessToken } = req.body;
   try {
