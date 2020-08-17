@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const authenticate = passport.authenticate('jwt', { session: false });
 const discussController = require('../controllers/discuss.controller');
+const isForumAdmin = require('../middleware/isForumAdmin');
 
 router.get('/', discussController.getDiscusses);
 
@@ -15,6 +16,12 @@ router.get('/:discussId', discussController.getDiscuss);
 router.put('/:discussId', authenticate, discussController.updateDiscuss);
 
 router.delete('/:discussId', authenticate, discussController.deleteDiscuss);
+
+router.delete(
+  '/:discussId/admin',
+  authenticate,
+  discussController.deleteDiscuss
+);
 
 router.put('/:discussId/view', discussController.putDiscussView);
 

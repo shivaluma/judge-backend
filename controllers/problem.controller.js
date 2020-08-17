@@ -120,7 +120,7 @@ exports.deleteProblem = async (req, res) => {
     const problem = await Problem.findByPk(problemId);
     problem.destroy();
   } catch (error) {
-    return res.status(200).json({ message: 'Can not delete problem!' });
+    return res.status(400).json({ message: 'Can not delete problem!' });
   }
   return res.status(200).json({ message: 'Delete successfull!' });
 };
