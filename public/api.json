@@ -13,7 +13,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "judgeonline.df.r.appspot.com",
+  "host": "localhost:3003",
   "basePath": "/api",
   "schemes": ["http", "https"],
   "securityDefinitions": {
@@ -35,6 +35,10 @@
     {
       "name": "Discuss",
       "description": "Operations about discuss"
+    },
+    {
+      "name": "Problem",
+      "description": "Operations about problem"
     }
   ],
   "paths": {
@@ -299,7 +303,7 @@
     },
     "/user/me": {
       "get": {
-        "tags": ["user"],
+        "tags": ["User"],
         "summary": "Get minimum info of user, for checking access token.",
         "operationId": "getMe",
         "security": [
@@ -562,15 +566,194 @@
           },
           {
             "in": "body",
-            "name": ""
+            "name": "Vote",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["typeVote"],
+              "properties": {
+                "typeVote": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Update discuss view successful."
+            "description": "Change discuss vote successful."
           },
           "400": {
-            "description": "Cant not update view discuss."
+            "description": "Cant not change discuss vote."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Discuss"],
+        "summary": "Get discuss vote.",
+        "operationId": "getDiscussVote",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get discuss vote successful."
+          },
+          "400": {
+            "description": "Cant not get discuss vote."
+          }
+        }
+      }
+    },
+    "/discuss/{discussId}/comment": {
+      "post": {
+        "tags": ["Discuss"],
+        "summary": "Post discuss comment.",
+        "operationId": "postDiscussCommet",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Vote",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["content", "parentId"],
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "parentId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post discuss comment successful."
+          },
+          "400": {
+            "description": "Cant not post discuss comment."
+          }
+        }
+      },
+      "get": {
+        "tags": ["Discuss"],
+        "summary": "Get discuss vote.",
+        "operationId": "getDiscussVote",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discussId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get discuss vote successful."
+          },
+          "400": {
+            "description": "Cant not get discuss vote."
+          }
+        }
+      }
+    },
+    "/problem/": {
+      "post": {
+        "tags": ["Problem"],
+        "summary": "Create problem.",
+        "operationId": "createProblem",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Problem",
+            "description": "Create problem object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "title",
+                "description",
+                "difficulty",
+                "hasSolution",
+                "isPremium",
+                "testcases"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "difficulty": {
+                  "type": "string",
+                  "enum": ["easy", "medium", "hard"]
+                },
+                "hasSolution": {
+                  "type": "boolean"
+                },
+                "isPremium": {
+                  "type": "boolean"
+                },
+                "testcases": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["input", "output"],
+                    "properties": {
+                      "input": {
+                        "type": "string"
+                      },
+                      "output": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Create problem successful."
+          },
+          "400": {
+            "description": "Cant create problem discuss."
           }
         }
       }

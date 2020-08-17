@@ -119,8 +119,8 @@ exports.deleteProblem = async (req, res) => {
   try {
     const problem = await Problem.findByPk(problemId);
     problem.destroy();
+    return res.status(200).end();
   } catch (error) {
     return res.status(400).json({ message: 'Can not delete problem!' });
   }
-  return res.status(200).json({ message: 'Delete successfull!' });
 };

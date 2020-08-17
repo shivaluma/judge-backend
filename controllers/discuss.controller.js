@@ -7,6 +7,7 @@ const {
   sequelize,
 } = require('../models');
 const { Op, literal, QueryTypes } = require('sequelize');
+const { urlencoded } = require('body-parser');
 const logger = require('../configs/logger').logger;
 
 exports.getDiscusses = async (req, res) => {
@@ -222,15 +223,17 @@ exports.deleteDiscuss = async (req, res) => {
   const { discussId } = req.params;
   const user = req.user;
 
-  const discuss = await Discuss.findByPk(discussId, {
-    where: {
-      userId: user.id,
-    },
-  });
+  const discuss = await Discuss.findByPk(discussId, {});
 
   if (discuss) {
-    await discuss.destroy();
-    return res.status(200).end();
+    if (
+      comment.userId == user.id ||
+      user.role == 'super_admmin' ||
+      user.role == 'forum_admin'
+    ) {
+      await discuss.destroy();
+      return res.status(200).end();
+    }
   } else {
     return res.status(404).json({ message: 'Cannot find disucss!' });
   }
@@ -395,14 +398,19 @@ exports.deleteComment = async (req, res) => {
 
   const comment = await Comment.findByPk(commentId, {
     where: {
-      userId: user.id,
       discussId: discussId,
     },
   });
 
   if (comment) {
-    await comment.destroy();
-    return res.status(200).end();
+    if (
+      comment.userId == user.id ||
+      user.role == 'super_admmin' ||
+      user.role == 'forum_admin'
+    ) {
+      await comment.destroy();
+      return res.status(200).end();
+    }
   } else {
     return res.status(404).json({ message: 'Cannot find comment!' });
   }
