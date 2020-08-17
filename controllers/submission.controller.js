@@ -38,7 +38,8 @@ exports.createSubmission = async (req, res) => {
     ' ||| '
   );
 
-  const response = await got.post('http://localhost/submit', {
+  logger.debug('BEFORE RESPONSE');
+  const response = await got.post('http://35.220.245.247/submit', {
     json: {
       src: new Buffer(code).toString('base64'),
       stdin: stdin,
@@ -48,6 +49,8 @@ exports.createSubmission = async (req, res) => {
       isBase64: true,
     },
   });
+
+  logger.debug('BEFORE RESPONSE');
 
   const currentInterval = setInterval(async () => {
     const result = await got.get(response.body).json();

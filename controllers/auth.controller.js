@@ -30,11 +30,7 @@ exports.postSignUp = async (req, res) => {
     const env = process.env.NODE_ENV || 'development';
     return res.status(400).json({
       message: 'Cannot create account',
-      duplicate: {
-        [env == 'development'
-          ? err.errors[0].path.split('.')[1]
-          : err.errors[0].path]: true,
-      },
+      error: err.errors,
     });
   }
 };
@@ -239,7 +235,6 @@ exports.postFacebook = async (req, res) => {
       .status(200)
       .json({ message: 'Login successfully.', accessToken, user: payload });
   } catch (error) {
-
     return res.status(500).json({ error });
   }
 };
@@ -265,8 +260,6 @@ exports.postUpdateUsername = async (req, res) => {
       password: 'nopassword',
       avatar: urlAvatar,
     });
-
-
 
     userSocialLogin.userId = user.id;
     await userSocialLogin.save();
