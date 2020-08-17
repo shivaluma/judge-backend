@@ -7,5 +7,6 @@ const problemController = require('../controllers/problem.controller');
 router.get('/list', problemController.getProblems);
 router.get('/', problemController.getProblem);
 router.post('/', authenticate, problemController.createProblem);
+router.delete('/', authenticate, problemController.deleteProblem);
 
 module.exports = router;

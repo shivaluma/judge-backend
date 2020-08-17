@@ -9,6 +9,12 @@ const { Op, literal, QueryTypes } = require('sequelize');
 const logger = require('../configs/logger').logger;
 
 exports.createProblem = async (req, res) => {
+  if (req.user.role != 'super_admin' && req.user.role != 'judge_admin') {
+    return res.status(403).json({
+      message: 'You do not have permission!',
+      error: error.message,
+    });
+  }
   const {
     title,
     description,
@@ -112,4 +118,21 @@ exports.getProblem = async (req, res) => {
   const { problemId } = req.query;
   const problem = await Problem.findByPk(problemId);
   return res.status(200).json({ problem: problem });
+};
+
+exports.deleteProblem = async (req, res) => {
+  const { problemId } = req.query;
+  if (req.user.role != 'super_admin' && req.user.role != 'judge_admin') {
+    return res.status(403).json({
+      message: 'You do not have permission!',
+      error: error.message,
+    });
+  }
+  try {
+    const problem = await Problem.findByPk(problemId);
+    problem.destroy();
+  } catch (error) {
+    return res.status(200).json({ message: 'Can not delete problem!' });
+  }
+  return res.status(200).json({ message: 'Delete successfull!' });
 };
