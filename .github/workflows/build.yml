@@ -29,4 +29,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/shivaluma/${{ inputs.ECR_REPO_NAME }}:${{ env.VERSION_LABEL }}
+          tags: ghcr.io/${{ secrets.GH_USERNAME }}/${{ inputs.ECR_REPO_NAME }}:${{ env.VERSION_LABEL }}

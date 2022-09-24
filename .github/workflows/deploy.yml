@@ -25,4 +25,4 @@ jobs:
             docker pull ghcr.io/${{ secrets.GH_USERNAME }}/${{ inputs.ECR_REPO_NAME }}:${{ env.VERSION_LABEL }}
             docker stop ${{ inputs.ECR_REPO_NAME }} > /dev/null 2>&1 || echo command failed $status
             docker rm ${{ inputs.ECR_REPO_NAME }} > /dev/null 2>&1 || echo command failed $status
-            docker run -d --name ${{ inputs.ECR_REPO_NAME }} -p 1001:3003 -e DATABASE="judge" USERNAME="root" PASSWORD="shiro" ghcr.io/${{ secrets.GH_USERNAME }}/${{ inputs.ECR_REPO_NAME }}:${{ env.VERSION_LABEL }}
+            docker run -d --name ${{ inputs.ECR_REPO_NAME }} -p 1001:3003 -e DATABASE="judge" -e USERNAME="root" -e PASSWORD="shiro" ghcr.io/${{ secrets.GH_USERNAME }}/${{ inputs.ECR_REPO_NAME }}:${{ env.VERSION_LABEL }}
