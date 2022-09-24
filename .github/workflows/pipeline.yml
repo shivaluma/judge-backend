@@ -10,12 +10,12 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      ECR_REPO_NAME: judge-backend
+      ECR_REPO_NAME: judgebackend
     secrets: inherit
 
   deploy:
     needs: [build]
     uses: ./.github/workflows/deploy.yml
     with:
-      ECR_REPO_NAME: judge-backend
+      ECR_REPO_NAME: judgebackend
     secrets: inherit
