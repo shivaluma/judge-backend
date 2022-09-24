@@ -1,7 +1,8 @@
 {
   "scripts": {
     "dev": "LOG_LEVEL=debug nodemon app.js | ./node_modules/.bin/pino-pretty",
-    "start": "node app.js"
+    "start": "node app.js",
+    "start:prod": "NODE_ENV=production node app.js"
   },
   "dependencies": {
     "bcrypt": "^4.0.1",

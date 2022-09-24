@@ -21,9 +21,6 @@
     "database": "judge",
     "host": "34.96.168.29",
     "dialect": "mysql",
-    "dialectOptions": {
-      "socketPath": "/cloudsql/judgeonline:asia-east2:judge-db"
-    },
     "logging": false,
     "operatorAliases": 0
   }
