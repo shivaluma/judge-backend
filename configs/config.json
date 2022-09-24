@@ -12,14 +12,14 @@
     "username": "root",
     "password": null,
     "database": "database_test",
-    "host": "127.0.0.1",
+    "host": "mysql-docker-local",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": "shiro",
     "database": "judge",
-    "host": "127.0.0.1",
+    "host": "mysql-docker-local",
     "dialect": "mysql",
     "logging": false,
     "operatorAliases": 0
