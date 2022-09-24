@@ -14,7 +14,7 @@ let sequelize;
 sequelize = new Sequelize(process.env.DATABASE, process.env.USERNAME, process.env.PASSWORD, {
   ...config,
   host: process.env.HOST,
-  port: '13306',
+  port: '3306',
   logging: (sql) => logger.info(sql),
 });
 
