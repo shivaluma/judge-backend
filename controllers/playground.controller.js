@@ -21,6 +21,7 @@ exports.postRunCode = async (req, res) => {
       }
     }, 400);
   } catch (err) {
+    console.log(err)
     return res.status(400).json({
       message: 'Some error occured, please contact the administrator.',
     });
