@@ -39,7 +39,7 @@ exports.createSubmission = async (req, res) => {
   );
 
   logger.debug('BEFORE RESPONSE');
-  const response = await got.post('http://judgecore-server/submit', {
+  const response = await got.post('http://judgecore-server:3007/submit', {
     json: {
       src: new Buffer(code).toString('base64'),
       stdin: stdin,

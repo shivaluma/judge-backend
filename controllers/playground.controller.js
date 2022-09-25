@@ -3,7 +3,7 @@ const got = require('got');
 exports.postRunCode = async (req, res) => {
   const { src, stdin, lang } = req.body;
   try {
-    const response = await got.post('http://judgecore-server/submit', {
+    const response = await got.post('http://judgecore-server:3007/submit', {
       json: {
         src: new Buffer(src).toString('base64'),
         stdin: stdin,
